@@ -430,7 +430,6 @@ static void prepare_context(void)
 
 struct refmatch {
 	char *req_ref;
-	char *first_ref;
 	int match;
 };
 
@@ -442,34 +441,59 @@ static int find_current_ref(const char *refname, const struct object_id *oid,
 	info = (struct refmatch *)cb_data;
 	if (!strcmp(refname, info->req_ref))
 		info->match = 1;
-	if (!info->first_ref)
-		info->first_ref = xstrdup(refname);
 	return info->match;
 }
 
-static void free_refmatch_inner(struct refmatch *info)
+struct newest_ref {
+	char *ref;
+	unsigned long date;
+};
+
+static int find_newest_ref(const char *refname, const struct object_id *oid,
+			   int flags, void *cb_data)
 {
-	if (info->first_ref)
-		free(info->first_ref);
+	struct newest_ref *newest = cb_data;
+	struct object *object;
+	unsigned long date;
+
+	object = parse_object(oid);
+	if (object->type == OBJ_COMMIT) {
+		date = ((struct commit *)object)->date;
+		if (date > newest->date) {
+			free(newest->ref);
+			newest->ref = xstrdup(refname);
+			newest->date = date;
+		}
+	}
+	return 0;
 }
 
 static char *find_default_branch(struct cgit_repo *repo)
 {
 	struct refmatch info;
+	struct newest_ref newest = { NULL };
 	char *ref;
 
 	info.req_ref = repo->defbranch;
-	info.first_ref = NULL;
 	info.match = 0;
 	for_each_branch_ref(find_current_ref, &info);
-	if (info.match)
+	if (info.match) {
 		ref = info.req_ref;
-	else
-		ref = info.first_ref;
+	} else {
+		/*
+		 * If the default branch isn't found, pick the most recently
+		 * updated branch, and if there are no branches, check if
+		 * this is a tag-only repo and pick any ref we can.
+		 */
+		for_each_branch_ref(find_newest_ref, &newest);
+		if (!newest.ref)
+			for_each_ref(find_newest_ref, &newest);
+		ref = newest.ref;
+	}
 	if (ref)
 		ref = xstrdup(ref);
-	free_refmatch_inner(&info);
 
+	free(newest.ref);
 	return ref;
 }
 
