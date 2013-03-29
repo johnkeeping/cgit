@@ -1,4 +1,4 @@
-base master
+base origin/master
 
 merge jk/update-git
 merge jk/compat-timegm
