@@ -16,3 +16,7 @@ merge jk/use-git-test-framework
 
   Can have several tidy-ups built on top if there is agreement that this
   is the right way to go.
+
+merge jk/no-sed-i-in-tests
+
+  Currently dogfooding locally.
