@@ -20,3 +20,5 @@ merge jk/use-git-test-framework
 merge jk/portable-tests
 
   Currently dogfooding locally.
+
+merge jk/fix-asan-issues
