@@ -1,12 +1,16 @@
 base origin/master
 
-merge jk/update-git
+merge jk/fix-asan-issues
 
-  Waiting for the next maint release of Git.
+  Submitted to cgit@hjemli.net.
 
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net.
+
+merge jk/update-git
+
+  Waiting for the next maint release of Git.
 
 merge jk/use-git-test-framework
 
@@ -20,5 +24,3 @@ merge jk/use-git-test-framework
 merge jk/portable-tests
 
   Currently dogfooding locally.
-
-merge jk/fix-asan-issues
