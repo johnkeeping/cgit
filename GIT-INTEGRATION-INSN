@@ -24,3 +24,5 @@ merge jk/use-git-test-framework
 merge jk/portable-tests
 
   Currently dogfooding locally.
+
+merge no-static-char-buf
