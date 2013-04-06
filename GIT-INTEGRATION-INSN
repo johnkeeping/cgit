@@ -27,4 +27,4 @@ merge jk/portable-tests
 
 merge jk/no-static-char-buf
 
-  War on fixed size buffers!
+  War on fixed size buffers.
