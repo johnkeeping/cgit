@@ -1,9 +1,5 @@
 base origin/wip
 
-merge jk/fix-asan-issues
-
-  Submitted to cgit@hjemli.net.
-
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net.
