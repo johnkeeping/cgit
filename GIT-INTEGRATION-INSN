@@ -4,23 +4,6 @@ merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net.
 
-merge jk/update-git
-
-  Waiting for the next maint release of Git.
-
-merge jk/use-git-test-framework
-
-  Submitted to cgit@hjemli.net.
-
-  Could use Sharness instead of Git's test framework.
-
-  Can have several tidy-ups built on top if there is agreement that this
-  is the right way to go.
-
 merge jk/portable-tests
 
   Currently dogfooding locally.
-
-merge jk/no-static-char-buf
-
-  War on fixed size buffers.
