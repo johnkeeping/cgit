@@ -3,7 +3,3 @@ base origin/wip
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net.
-
-merge jk/portable-tests
-
-  Currently dogfooding locally.
