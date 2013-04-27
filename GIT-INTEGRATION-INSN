@@ -11,3 +11,8 @@ merge jk/compat-timegm
 merge log-follow-files
 
   Submitted to cgit@hjemli.net.
+
+merge update-git
+
+  First two patches submitted.  Last patch is a WIP waiting on the final
+  Git v1.8.3 release.
