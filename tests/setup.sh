@@ -42,6 +42,7 @@ IFS=$LF
 set -- $test_argv
 IFS=$OLDIFS
 
+CGIT_TEST_DIRECTORY=$(pwd)
 : ${TEST_DIRECTORY=$(pwd)/../git/t}
 : ${TEST_OUTPUT_DIRECTORY=$(pwd)}
 TEST_NO_CREATE_REPO=YesPlease
@@ -171,6 +172,36 @@ strip_headers() {
 		test -z "$line" && break
 	done
 	cat
+}
+
+test_lazy_prereq XSLTPROC '
+	xsltproc --version >/dev/null 2>&1
+'
+
+xslt_cmp () {
+	local stylesheet=$1 expect=$2 actual=$3
+
+	xsltproc --html "$CGIT_TEST_DIRECTORY/xslt/${stylesheet}.xsl" \
+		"$actual" >"$actual".txt &&
+	test_cmp "$expect" "$actual".txt
+}
+
+xslt_expect () {
+	local outcome=$1 description=$2 url=$3 stylesheet=$4 expect=$5
+
+	test_expect_$outcome XSLTPROC "$description" '
+		printf "%s" "$expect" >expect &&
+		cgit_url "$url" >actual &&
+		xslt_cmp "$stylesheet" expect actual
+	'
+}
+
+xslt_expect_success () {
+	xslt_expect success "$@"
+}
+
+xslt_expect_failure () {
+	xslt_expect failure "$@"
 }
 
 test -z "$CGIT_TEST_NO_CREATE_REPOS" && setup_repos

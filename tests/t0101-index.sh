@@ -14,4 +14,17 @@ test_expect_success 'verify "with%20space" link' 'grep "/with%20space/" tmp'
 test_expect_success 'no tree-link' '! grep "foo/tree" tmp'
 test_expect_success 'no log-link' '! grep "foo/log" tmp'
 
+test_expect_success XSLTPROC 'repo list' '
+	cat <<-\EOF >expect &&
+	bar
+	filter-exec
+	filter-lua
+	foo
+	foo+bar
+	with space
+	EOF
+	strip_headers <tmp >actual &&
+	xslt_cmp repo_list expect actual
+'
+
 test_done
