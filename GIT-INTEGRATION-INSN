@@ -8,7 +8,7 @@ merge jk/compat-timegm
   Doing the back and forth in the local timezone is mostly good enough,
   but doesn't handle DST correctly.
 
-merge jk/use-git-test-infrastructure
+merge jk/use-git-test-framework
 
 merge log-follow-files
 
