@@ -18,3 +18,5 @@ merge update-git
   Git v1.8.3 release.
 
 merge fix-tests-with-dash
+
+merge fix-parallel-make-test
