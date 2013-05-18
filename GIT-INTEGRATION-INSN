@@ -24,3 +24,5 @@ merge scan-exclude
 merge span-around-decorations
 
 merge test-improvements
+
+merge origin/jk/valgrind-tests
