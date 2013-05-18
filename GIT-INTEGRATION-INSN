@@ -20,3 +20,11 @@ merge update-git
 merge fix-tests-with-dash
 
 merge fix-parallel-make-test
+
+merge scan-exclude
+
+merge span-around-decorations
+
+merge test-improvements
+
+merge fix-parallel-make-test
