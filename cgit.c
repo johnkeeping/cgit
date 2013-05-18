@@ -231,6 +231,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "project-list"))
 		ctx.cfg.project_list = xstrdup(expand_macros(value));
+	else if (!strcmp(name, "scan-exclude"))
+		string_list_append(&ctx.cfg.scan_exclude, expand_macros(value));
 	else if (!strcmp(name, "scan-path"))
 		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
 			process_cached_repolist(expand_macros(value));
@@ -418,6 +420,8 @@ static void prepare_context(void)
 	ctx.page.expires = ctx.page.modified;
 	ctx.page.etag = NULL;
 	memset(&ctx.cfg.mimetypes, 0, sizeof(struct string_list));
+	memset(&ctx.cfg.scan_exclude, 0, sizeof(struct string_list));
+	ctx.cfg.scan_exclude.strdup_strings = 1;
 	if (ctx.env.script_name)
 		ctx.cfg.script_name = xstrdup(ctx.env.script_name);
 	if (ctx.env.query_string)

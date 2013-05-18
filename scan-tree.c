@@ -78,6 +78,18 @@ static char *xstrrchr(char *s, char *from, int c)
 	return from < s ? NULL : from;
 }
 
+static int exclude_repo(const char *path)
+{
+	int i;
+	struct string_list *exclude = &ctx.cfg.scan_exclude;
+
+	for (i = 0; i < exclude->nr; i++)
+		if (!wildmatch(exclude->items[i].string, path, WM_PATHNAME, NULL))
+			return 1;
+
+	return 0;
+}
+
 static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 {
 	struct stat st;
@@ -93,6 +105,9 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 			path->buf, strerror(errno), errno);
 		return;
 	}
+
+	if (exclude_repo(path->buf))
+		return;
 
 	strbuf_addch(path, '/');
 	pathlen = path->len;
