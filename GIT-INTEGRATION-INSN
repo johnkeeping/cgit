@@ -1,5 +1,17 @@
 base origin/master
 
+merge fix-parallel-make-test
+
+  In wip upstream.
+
+merge span-around-decorations
+
+  In wip upstream.
+
+merge html-die-on-write-failed
+
+  In wip upstream.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
@@ -10,27 +22,24 @@ merge jk/compat-timegm
 
 merge jk/use-git-test-framework
 
+  Valgrind patch currently in its own branch upstream.
+
 merge log-follow-files
 
-  Submitted to cgit@hjemli.net.
+  In its own branch upstream.
+
+merge fix-ls-cache-output-cache
+
+  Submitted upstream.
 
 merge update-git
 
-  First two patches submitted.  Last patch is a WIP waiting on the final
-  Git v1.8.3 release.
-
-merge fix-parallel-make-test
-
-  In wip upstream.
-
-merge scan-exclude
-
-merge span-around-decorations
-
-  In wip upstream.
+  WIP waiting on the final Git v1.8.3 release.
 
 merge test-improvements
 
-merge fix-ls-cache-uninit-memory
+  WIP improvements to make the test suite more robust.
 
-merge html-die-on-write-failed
+merge scan-exclude
+
+  An experiment to handle a certain use case.  Probably not desirable.
