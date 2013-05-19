@@ -32,3 +32,5 @@ merge span-around-decorations
 merge test-improvements
 
 merge fix-ls-cache-uninit-memory
+
+merge html-die-on-write-failed
