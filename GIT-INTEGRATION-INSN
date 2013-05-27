@@ -28,14 +28,6 @@ merge log-follow-files
 
   In its own branch upstream.
 
-merge fix-ls-cache-output-cache
-
-  Submitted upstream.
-
-merge update-git
-
-  WIP waiting on the final Git v1.8.3 release.
-
 merge test-improvements
 
   WIP improvements to make the test suite more robust.
