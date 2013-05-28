@@ -1,17 +1,5 @@
 base origin/master
 
-merge fix-parallel-make-test
-
-  In wip upstream.
-
-merge span-around-decorations
-
-  In wip upstream.
-
-merge html-die-on-write-failed
-
-  In wip upstream.
-
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
