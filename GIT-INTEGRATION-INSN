@@ -1,5 +1,9 @@
 base origin/master
 
+merge update-git
+
+  1.8.4 RC update waiting on the final release.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
