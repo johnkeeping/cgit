@@ -1,5 +1,11 @@
 base origin/wip
 
+merge plain-no-bin-charset
+
+  Submitted upstream.
+
+  Remove "charset=" from non-text MIME types.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
