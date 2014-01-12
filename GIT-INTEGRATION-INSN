@@ -26,6 +26,8 @@ merge test-improvements
 
   WIP improvements to make the test suite more robust.
 
+merge jk/lua-filters
+
 merge scan-exclude
 
   An experiment to handle a certain use case.  Probably not desirable.
