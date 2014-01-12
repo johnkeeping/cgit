@@ -1,5 +1,9 @@
 base origin/master
 
+merge jk/cache-no-uninit-branch
+
+  Submitted upstream.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
@@ -16,11 +20,11 @@ merge log-follow-files
 
   In its own branch upstream.
 
+merge jk/lua-filters
+
 merge test-improvements
 
   WIP improvements to make the test suite more robust.
-
-merge jk/lua-filters
 
 merge scan-exclude
 
