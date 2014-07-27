@@ -12,8 +12,6 @@ merge log-follow-files
 
   In its own branch upstream.
 
-merge jk/lua-filters
-
 merge test-improvements
 
   WIP improvements to make the test suite more robust.
