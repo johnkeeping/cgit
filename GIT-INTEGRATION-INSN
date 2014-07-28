@@ -1,11 +1,5 @@
 base origin/master
 
-merge git-2.0.3
-
-  Update to Git v2.0.3.
-
-  Submitted upstream.
-
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
