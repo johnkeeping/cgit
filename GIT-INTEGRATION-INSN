@@ -1,5 +1,9 @@
 base origin/master
 
+merge diff-summary
+
+  Suggested-by: Konstantin Ryabitsev <mricon@kernel.org>
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
