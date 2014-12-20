@@ -4,6 +4,10 @@ merge diff-summary
 
   Suggested-by: Konstantin Ryabitsev <mricon@kernel.org>
 
+merge time-tooltip
+
+  Add the absolute time as the title for spans containing a relative date.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
