@@ -8,6 +8,10 @@ merge time-tooltip
 
   Add the absolute time as the title for spans containing a relative date.
 
+merge contrib-hook-agefile
+
+  Add an example post-receive hook to configure the agefile.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
