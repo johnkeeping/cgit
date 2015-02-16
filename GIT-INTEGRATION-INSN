@@ -4,10 +4,6 @@ merge contrib-hook-agefile
 
   Add an example post-receive hook to configure the agefile.
 
-merge tag-head
-
-  Submitted upstream.
-
 merge runtime-sendtime
 
   Allow the use of sendfile(2) to be disabled in cgitrc.
