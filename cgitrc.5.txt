@@ -184,6 +184,12 @@ enable-remote-branches::
 	in the summary and refs views. Default value: "0". See also:
 	"repo.enable-remote-branches".
 
+enable-sendfile::
+	Flag controlling whether to use the sendfile(2) syscall when serving
+	cached content. Default value: "1". Note that sendfile can only be
+	used if it is supported by your operating system and was enabled at
+	compile time (see the output of `cgit --version`).
+
 enable-subject-links::
 	Flag which, when set to "1", will make cgit use the subject of the
 	parent commit as link text when generating links to parent commits

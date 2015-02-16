@@ -157,6 +157,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-sendfile"))
+		ctx.cfg.enable_sendfile = atoi(value);
 	else if (!strcmp(name, "enable-filter-overrides"))
 		ctx.cfg.enable_filter_overrides = atoi(value);
 	else if (!strcmp(name, "enable-follow-links"))
@@ -369,6 +371,7 @@ static void prepare_context(void)
 	ctx.cfg.logo = "/cgit.png";
 	ctx.cfg.favicon = "/favicon.ico";
 	ctx.cfg.local_time = 0;
+	ctx.cfg.enable_sendfile = 1;
 	ctx.cfg.enable_http_clone = 1;
 	ctx.cfg.enable_index_owner = 1;
 	ctx.cfg.enable_tree_linenumbers = 1;
