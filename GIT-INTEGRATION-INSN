@@ -8,6 +8,10 @@ merge tag-head
 
   Submitted upstream.
 
+merge runtime-sendtime
+
+  Allow the use of sendfile(2) to be disabled in cgitrc.
+
 merge jk/compat-timegm
 
   Submitted to cgit@hjemli.net but not applied.
