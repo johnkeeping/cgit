@@ -197,6 +197,7 @@ static int unlock_slot(struct cache_slot *slot, int replace_old_slot)
 	else
 		err = unlink(slot->lock_name);
 
+	slot->lock_name = NULL;
 	if (err)
 		return errno;
 
