@@ -357,6 +357,8 @@ static int process_slot(struct cache_slot *slot)
 	return err;
 }
 
+static struct cache_slot the_slot;
+
 /* Print cached content to stdout, generate the content if necessary. */
 int cache_process(int size, const char *path, const char *key, int ttl,
 		  cache_fill_fn fn)
@@ -365,7 +367,6 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	int i;
 	struct strbuf filename = STRBUF_INIT;
 	struct strbuf lockname = STRBUF_INIT;
-	struct cache_slot slot;
 	int result;
 
 	/* If the cache is disabled, just generate the content */
@@ -391,13 +392,13 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	}
 	strbuf_addbuf(&lockname, &filename);
 	strbuf_addstr(&lockname, ".lock");
-	slot.fn = fn;
-	slot.ttl = ttl;
-	slot.cache_name = filename.buf;
-	slot.lock_name = lockname.buf;
-	slot.key = key;
-	slot.keylen = strlen(key);
-	result = process_slot(&slot);
+	the_slot.fn = fn;
+	the_slot.ttl = ttl;
+	the_slot.cache_name = filename.buf;
+	the_slot.lock_name = lockname.buf;
+	the_slot.key = key;
+	the_slot.keylen = strlen(key);
+	result = process_slot(&the_slot);
 
 	strbuf_release(&filename);
 	strbuf_release(&lockname);
