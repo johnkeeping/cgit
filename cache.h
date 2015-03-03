@@ -28,6 +28,9 @@ extern int cache_process(int size, const char *path, const char *key, int ttl,
 /* List info about all cache entries on stdout */
 extern int cache_ls(const char *path);
 
+/* Cleanup open cache lock files on abnormal exit */
+extern void cache_cleanup_locks(void);
+
 /* Print a message to stdout */
 __attribute__((format (printf,1,2)))
 extern void cache_log(const char *format, ...);

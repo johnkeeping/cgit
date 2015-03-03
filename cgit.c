@@ -1033,6 +1033,26 @@ static int calc_ttl(void)
 	return ctx.cfg.cache_repo_ttl;
 }
 
+static void cleanup_handler(int signum)
+{
+	cache_cleanup_locks();
+}
+
+static void register_signal_handlers(void)
+{
+	struct sigaction sa = {
+		.sa_handler = cleanup_handler,
+		.sa_flags = SA_RESETHAND,
+	};
+	sigemptyset(&sa.sa_mask);
+
+	sigaction(SIGHUP, &sa, NULL);
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGPIPE, &sa, NULL);
+	sigaction(SIGTERM, &sa, NULL);
+}
+
 int cmd_main(int argc, const char **argv)
 {
 	const char *path;
@@ -1040,6 +1060,8 @@ int cmd_main(int argc, const char **argv)
 
 	cgit_init_filters();
 	atexit(cgit_cleanup_filters);
+
+	register_signal_handlers();
 
 	prepare_context();
 	cgit_repolist.length = 0;

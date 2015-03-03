@@ -360,6 +360,12 @@ static int process_slot(struct cache_slot *slot)
 
 static struct cache_slot the_slot;
 
+void cache_cleanup_locks(void)
+{
+	if (the_slot.lock_name)
+		unlock_slot(&the_slot, 0);
+}
+
 /* Print cached content to stdout, generate the content if necessary. */
 int cache_process(int size, const char *path, const char *key, int ttl,
 		  cache_fill_fn fn)
