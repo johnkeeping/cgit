@@ -15,7 +15,8 @@ pdfdir = $(docdir)
 mandir = $(prefix)/share/man
 SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 2.3.2
-GIT_URL = https://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.gz
+GIT_FILE = git-$(GIT_VER).tar.gz
+GIT_URL = https://www.kernel.org/pub/software/scm/git/$(GIT_FILE)
 INSTALL = install
 COPYTREE = cp -r
 MAN5_TXT = $(wildcard *.5.txt)
@@ -57,6 +58,7 @@ ifndef V
 	QUIET_SUBDIR0  = +@subdir=
 	QUIET_SUBDIR1  = ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
 			 $(MAKE) $(PRINT_DIR) -C $$subdir
+	QUIET_FETCH    = @echo '   ' FETCH;
 	QUIET_TAGS     = @echo '   ' TAGS $@;
 	export V
 endif
@@ -146,7 +148,15 @@ clean-doc:
 	$(RM) cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
 
 get-git:
-	curl -L $(GIT_URL) | tar -xzf - && rm -rf git && mv git-$(GIT_VER) git
+	$(QUIET_FETCH)curl -L $(GIT_URL) --output $(GIT_FILE) && \
+	if type sha256sum >/dev/null 2>&1; \
+	then \
+		sha256sum --check git.sha256sum; \
+	else \
+		echo >&2 'WARNING: sha256sum is not found; $(GIT_FILE) cannot be verified'; \
+	fi && \
+	tar -xzf $(GIT_FILE) && \
+	rm -rf git && mv git-$(GIT_VER) git
 
 tags:
 	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags

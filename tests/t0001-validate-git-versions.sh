@@ -9,6 +9,12 @@ test_expect_success 'extract Git version from Makefile' '
 		s/^GIT_VER[ 	]*=[ 	]*//
 		p
 	}" ../../Makefile >makefile_version
+	GIT_VER=$(cat makefile_version)
+	sed -n -e "/^GIT_FILE[ 	]*=/ {
+		s/^GIT_FILE[ 	]*=[ 	]*//
+		s/\$(GIT_VER)/$GIT_VER/
+		p
+	}" ../../Makefile >makefile_file
 '
 
 # Note that Git's GIT-VERSION-GEN script applies "s/-/./g" to the version
@@ -36,6 +42,11 @@ test_expect_success 'test submodule version matches Makefile' '
 		) | sed -e "s/^v//" >sm_version &&
 		test_cmp sm_version makefile_version
 	fi
+'
+
+test_expect_success 'git.sha256sum version matches Makefile' '
+	sed -e "s/[0-9a-z]* *//" ../../git.sha256sum >sha256sum_file
+	test_cmp sha256sum_file makefile_file
 '
 
 test_done
