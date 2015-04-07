@@ -697,7 +697,18 @@ static inline void authenticate_cookie(void)
 	ctx.env.authenticated = cgit_close_filter(ctx.cfg.auth_filter);
 }
 
-static void process_request(void)
+/*
+ * Processes a request for the cache layer.  The return value of this function
+ * is a little weird because it is used to control whether we might want to
+ * drop errors (i.e. do not cache them), so we return "0" (success) for
+ * invalid requests when the command is unknown or a required parameter is not
+ * supplied since these can be cached indefinitely.  However we return "1"
+ * (failure) if the page generation process results in an error since this
+ * could be a transient condition - we do not want to cache the fact that an
+ * object does not exist indefinitely since it may be pushed to the repository
+ * in the future.
+ */
+static int process_request(void)
 {
 	struct cgit_cmd *cmd;
 
@@ -712,26 +723,26 @@ static void process_request(void)
 		open_auth_filter("body");
 		cgit_close_filter(ctx.cfg.auth_filter);
 		cgit_print_docend();
-		return;
+		return 0;
 	}
 
 	cmd = cgit_get_cmd();
 	if (!cmd) {
 		ctx.page.title = "cgit error";
 		cgit_print_error_page(404, "Not found", "Invalid request");
-		return;
+		return 0;
 	}
 
 	if (!ctx.cfg.enable_http_clone && cmd->is_clone) {
 		ctx.page.title = "cgit error";
 		cgit_print_error_page(404, "Not found", "Invalid request");
-		return;
+		return 0;
 	}
 
 	if (cmd->want_repo && !ctx.repo) {
 		cgit_print_error_page(400, "Bad request",
 				"No repository selected");
-		return;
+		return 0;
 	}
 
 	/* If cmd->want_vpath is set, assume ctx.qry.path contains a "virtual"
@@ -741,9 +752,10 @@ static void process_request(void)
 	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
 
 	if (ctx.repo && prepare_repo_cmd())
-		return;
+		return 1;
 
 	cmd->fn();
+	return ctx.page.status && ctx.page.status != 200;
 }
 
 static int cmp_repos(const void *a, const void *b)

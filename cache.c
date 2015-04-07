@@ -32,6 +32,7 @@ struct cache_slot {
 	const char *cache_name;
 	const char *lock_name;
 	int match;
+	int drop;
 	struct stat cache_st;
 	int bufsize;
 	char buf[CACHE_BUFSIZE];
@@ -222,7 +223,7 @@ static int fill_slot(struct cache_slot *slot)
 	}
 
 	/* Generate cache content */
-	slot->fn();
+	slot->drop = slot->fn();
 
 	/* Make sure any buffered data is flushed to the file */
 	if (fflush(stdout)) {
@@ -346,7 +347,7 @@ static int process_slot(struct cache_slot *slot)
 	// Lets avoid such a race by just printing the content of
 	// the lock file.
 	slot->cache_fd = slot->lock_fd;
-	unlock_slot(slot, 1);
+	unlock_slot(slot, !slot->drop);
 	if ((err = print_slot(slot)) != 0) {
 		cache_log("[cgit] error printing cache %s: %s (%d)\n",
 			  slot->cache_name,

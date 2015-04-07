@@ -6,7 +6,7 @@
 #ifndef CGIT_CACHE_H
 #define CGIT_CACHE_H
 
-typedef void (*cache_fill_fn)(void);
+typedef int (*cache_fill_fn)(void);
 
 
 /* Print cached content to stdout, generate the content if necessary.
