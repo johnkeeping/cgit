@@ -141,6 +141,11 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 	htmlf("blob: %s (", sha1_to_hex(sha1));
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
 		        rev, path);
+	if (ctx.cfg.enable_blame) {
+		html(" | ");
+		cgit_blame_link("blame", NULL, NULL, ctx.qry.head,
+				rev, path, -1);
+	}
 	html(")\n");
 
 	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
@@ -275,6 +280,10 @@ static int ls_item(const unsigned char *sha1, struct strbuf *base,
 	if (!S_ISGITLINK(mode))
 		cgit_plain_link("plain", NULL, "button", ctx.qry.head,
 				walk_tree_ctx->curr_rev, fullpath.buf);
+	if (S_ISREG(mode) && ctx.cfg.enable_blame)
+		cgit_blame_link("blame", NULL, "button", ctx.qry.head,
+				walk_tree_ctx->curr_rev,
+				fullpath.buf, -1);
 	html("</td></tr>\n");
 	free(name);
 	strbuf_release(&fullpath);
