@@ -6,14 +6,12 @@ merge blame
 
   Add a blame UI.
 
-merge no-cache-errors
+. merge no-cache-errors
 
   Prelimnary steps towards avoiding caching error pages or reducing the
   amount of time for which they are cached.
 
-merge contrib-hook-agefile
-
-  Add an example post-receive hook to configure the agefile.
+  Conflicts with "blame", so this is disabled until I see where that goes.
 
 merge runtime-sendtime
 
