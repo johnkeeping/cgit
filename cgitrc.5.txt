@@ -146,6 +146,10 @@ enable-commit-graph::
 	history graph to the left of the commit messages in the repository
 	log page. Default value: "0".
 
+enable-blame::
+	Flag which, when set to "1", enables the blame UI.  Default value:
+	"0".
+
 enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.

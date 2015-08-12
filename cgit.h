@@ -18,12 +18,14 @@
 #include <revision.h>
 #include <log-tree.h>
 #include <archive.h>
+#include <run-command.h>
 #include <string-list.h>
 #include <xdiff-interface.h>
 #include <xdiff/xdiff.h>
 #include <utf8.h>
 #include <notes.h>
 #include <graph.h>
+#include <quote.h>
 
 /* Add isgraph(x) to Git's sane ctype support (see git-compat-util.h) */
 #undef isgraph
@@ -223,6 +225,7 @@ struct cgit_config {
 	int cache_snapshot_ttl;
 	int case_sensitive_sort;
 	int embedded;
+	int enable_blame;
 	int enable_filter_overrides;
 	int enable_follow_links;
 	int enable_http_clone;

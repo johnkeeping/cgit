@@ -306,6 +306,10 @@ div#cgit table.blob td.lines {
 	color: black;
 }
 
+div#cgit table.blob td.noprevious {
+	font-weight: bold;
+}
+
 div#cgit table.blob td.linenumbers {
 	margin: 0; padding: 0 0.5em 0 0.5em;
 	vertical-align: top;

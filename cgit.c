@@ -157,6 +157,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-blame"))
+		ctx.cfg.enable_blame = atoi(value);
 	else if (!strcmp(name, "enable-filter-overrides"))
 		ctx.cfg.enable_filter_overrides = atoi(value);
 	else if (!strcmp(name, "enable-follow-links"))
@@ -714,7 +716,7 @@ static void process_request(void)
 	}
 
 	cmd = cgit_get_cmd();
-	if (!cmd) {
+	if (!cmd || (!ctx.cfg.enable_blame && !strcmp(cmd->name, "blame"))) {
 		ctx.page.title = "cgit error";
 		cgit_print_error_page(404, "Not found", "Invalid request");
 		return;
