@@ -2,7 +2,7 @@ base origin/master
 
 merge blame
 
-  Submitted upstream by the ML may not be working...
+  In its own branch upstream.  May need changing to avoid exec'ing git-blame.
 
   Add a blame UI.
 
@@ -24,10 +24,6 @@ merge jk/compat-timegm
   Need to see if there is an alternative to introducing a compat function.
   Doing the back and forth in the local timezone is mostly good enough,
   but doesn't handle DST correctly.
-
-merge log-follow-files
-
-  In its own branch upstream.
 
 merge test-improvements
 
