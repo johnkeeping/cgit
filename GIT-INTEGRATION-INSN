@@ -13,12 +13,6 @@ merge blame
 
   Conflicts with "blame", so this is disabled until I see where that goes.
 
-merge portability
-
-  Submitted upstream.
-
-  A collection of portability fixes, mostly found on Solaris.
-
 merge ident-tz
 
   Show timestamps in the originator's timezone instead of the server's
