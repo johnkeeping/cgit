@@ -13,6 +13,12 @@ merge blame
 
   Conflicts with "blame", so this is disabled until I see where that goes.
 
+merge portability
+
+  Submitted upstream.
+
+  A collection of portability fixes, mostly found on Solaris.
+
 merge runtime-sendtime
 
   Allow the use of sendfile(2) to be disabled in cgitrc.
