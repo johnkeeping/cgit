@@ -19,6 +19,17 @@ merge portability
 
   A collection of portability fixes, mostly found on Solaris.
 
+merge ident-tz
+
+  Show timestamps in the originator's timezone instead of the server's
+  when the "local-time" option is not enabled.
+
+  This changes the format from "%Y-%m-%d %H:%M:%S (%Z)" to something
+  more like RFC2822, which breaks the layout of right-aligned date
+  fields.  Ideally we need to update git.git so that DATE_LOCAL is a
+  modifier rather than a separate mode, otherwise we will be using a
+  different format in local and originator time formatting.
+
 merge runtime-sendtime
 
   Allow the use of sendfile(2) to be disabled in cgitrc.
