@@ -18,21 +18,23 @@ struct walk_tree_context {
 
 static int print_object(const unsigned char *sha1, const char *path)
 {
+	static char buf[1024 * 16];
+	struct git_istream *st;
 	enum object_type type;
-	char *buf, *mimetype;
+	char *mimetype;
 	unsigned long size;
+	size_t sz_read;
+	int result = 0;
 
-	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD) {
+	st = open_istream(sha1, &type, &size, NULL);
+	if (!st) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
 	}
 
-	buf = read_sha1_file(sha1, &type, &size);
-	if (!buf) {
-		cgit_print_error_page(404, "Not found", "Not found");
-		return 0;
-	}
+	sz_read = read_istream(st, buf, sizeof(buf));
+	if (sz_read < 0)
+		goto err;
 
 	mimetype = get_mimetype_for_filename(path);
 	ctx.page.mimetype = mimetype;
@@ -48,7 +50,7 @@ static int print_object(const unsigned char *sha1, const char *path)
 	}
 
 	if (!ctx.page.mimetype) {
-		if (buffer_is_binary(buf, size)) {
+		if (buffer_is_binary(buf, sz_read)) {
 			ctx.page.mimetype = "application/octet-stream";
 			ctx.page.charset = NULL;
 		} else {
@@ -59,10 +61,18 @@ static int print_object(const unsigned char *sha1, const char *path)
 	ctx.page.size = size;
 	ctx.page.etag = sha1_to_hex(sha1);
 	cgit_print_http_headers();
-	html_raw(buf, size);
+	while (sz_read) {
+		html_raw(buf, sz_read);
+		sz_read = read_istream(st, buf, sizeof(buf));
+		if (sz_read < 0)
+			goto err;
+	}
+	result = 1;
+
+err:
+	close_istream(st);
 	free(mimetype);
-	free(buf);
-	return 1;
+	return result;
 }
 
 static char *buildpath(const char *base, int baselen, const char *path)

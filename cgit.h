@@ -18,6 +18,7 @@
 #include <revision.h>
 #include <log-tree.h>
 #include <archive.h>
+#include <streaming.h>
 #include <string-list.h>
 #include <xdiff-interface.h>
 #include <xdiff/xdiff.h>
