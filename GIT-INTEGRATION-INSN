@@ -1,5 +1,9 @@
 base origin/master
 
+merge jk/http-status-codes
+
+  Submitted upstream as v2.
+
 merge blame
 
   In its own branch upstream.  May need changing to avoid exec'ing git-blame.
