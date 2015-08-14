@@ -79,8 +79,13 @@ char *fmtalloc(const char *format, ...)
 
 void html_raw(const char *data, size_t size)
 {
-	if (write(STDOUT_FILENO, data, size) != size)
-		die_errno("write error on html output");
+	while (size) {
+		ssize_t result = write(STDOUT_FILENO, data, size);
+		if (result < 0)
+			die_errno("write error on html output");
+		size -= result;
+		data += result;
+	}
 }
 
 void html(const char *txt)
