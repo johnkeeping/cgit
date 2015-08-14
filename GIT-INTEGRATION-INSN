@@ -22,6 +22,10 @@ merge ident-tz
   modifier rather than a separate mode, otherwise we will be using a
   different format in local and originator time formatting.
 
+merge streaming
+
+  WIP converting to Git's streaming interface for large blobs.
+
 merge runtime-sendtime
 
   Allow the use of sendfile(2) to be disabled in cgitrc.
