@@ -1,9 +1,5 @@
 base origin/master
 
-merge jk/http-status-codes
-
-  Submitted upstream as v2.
-
 merge blame
 
   In its own branch upstream.  May need changing to avoid exec'ing git-blame.
@@ -12,10 +8,8 @@ merge blame
 
 . merge no-cache-errors
 
-  Prelimnary steps towards avoiding caching error pages or reducing the
-  amount of time for which they are cached.
-
-  Conflicts with "blame", so this is disabled until I see where that goes.
+  Final step to completely avoid caching error pages, but I'm not sure we want
+  this; the existing behaviour of using "cache-dynamic-ttl" may be enough.
 
 merge ident-tz
 
