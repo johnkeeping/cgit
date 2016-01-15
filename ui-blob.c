@@ -170,7 +170,6 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 		ctx.page.mimetype = "text/plain";
 	ctx.page.filename = path;
 
-	html("X-Content-Type-Options: nosniff\n");
 	html("Content-Security-Policy: default-src 'none'\n");
 	cgit_print_http_headers();
 	html_raw(buf, size);

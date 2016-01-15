@@ -38,7 +38,6 @@ static int print_object(const unsigned char *sha1, const char *path)
 	ctx.page.mimetype = mimetype;
 
 	if (!ctx.repo->enable_html_serving) {
-		html("X-Content-Type-Options: nosniff\n");
 		html("Content-Security-Policy: default-src 'none'\n");
 		if (mimetype) {
 			/* Built-in white list allows PDF and everything that isn't text/ and application/ */

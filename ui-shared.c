@@ -698,6 +698,7 @@ void cgit_print_http_headers(void)
 	htmlf("Expires: %s\n", http_date(ctx.page.expires));
 	if (ctx.page.etag)
 		htmlf("ETag: \"%s\"\n", ctx.page.etag);
+	html("X-Content-Type-Options: nosniff\n");
 	html("\n");
 	if (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD"))
 		exit(0);
