@@ -41,8 +41,13 @@ static int print_object(const unsigned char *sha1, const char *path)
 		html("Content-Security-Policy: default-src 'none'\n");
 		if (mimetype) {
 			/* Built-in white list allows PDF and everything that isn't text/ and application/ */
-			if ((!strncmp(mimetype, "text/", 5) || !strncmp(mimetype, "application/", 12)) && strcmp(mimetype, "application/pdf"))
-				ctx.page.mimetype = NULL;
+			if (!strncmp(mimetype, "text/", 5))
+				ctx.page.mimetype = "text/plain";
+			else if (!strncmp(mimetype, "application/", 12) &&
+				 strcmp(mimetype, "application/pdf")) {
+				ctx.page.mimetype = "application/octet-stream";
+				ctx.page.charset = NULL;
+			}
 		}
 	}
 
