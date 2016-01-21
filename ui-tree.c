@@ -61,27 +61,42 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 
 #define ROWLEN 32
 
-static void print_binary_buffer(char *buf, unsigned long size)
+static void print_binary_stream(struct git_istream *st, char *buf,
+		size_t buf_size, ssize_t sz_read)
 {
 	unsigned long ofs, idx;
+	char *b = buf;
 	static char ascii[ROWLEN + 1];
 
 	html("<table summary='blob content' class='bin-blob'>\n");
 	html("<tr><th>ofs</th><th>hex dump</th><th>ascii</th></tr>");
-	for (ofs = 0; ofs < size; ofs += ROWLEN, buf += ROWLEN) {
+	for (ofs = 0; ; ofs += ROWLEN, b += ROWLEN, sz_read -= ROWLEN) {
+		if (sz_read < ROWLEN) {
+			size_t remaining = sz_read;
+			if (buf != b)
+				memmove(buf, b, sz_read);
+			sz_read = read_istream(st, buf + sz_read, buf_size - sz_read);
+			if (sz_read < 0)
+				goto err;
+			sz_read += remaining;
+			if (sz_read == 0)
+				break;
+			b = buf;
+		}
 		htmlf("<tr><td class='right'>%04lx</td><td class='hex'>", ofs);
-		for (idx = 0; idx < ROWLEN && ofs + idx < size; idx++)
-			htmlf("%*s%02x",
-			      idx == 16 ? 4 : 1, "",
-			      buf[idx] & 0xff);
+		for (idx = 0; idx < ROWLEN && idx < sz_read; idx++)
+			htmlf("%*s%02x", idx == 16 ? 4 : 1, "", b[idx] & 0xff);
 		html(" </td><td class='hex'>");
-		for (idx = 0; idx < ROWLEN && ofs + idx < size; idx++)
-			ascii[idx] = isgraph(buf[idx]) ? buf[idx] : '.';
+		for (idx = 0; idx < ROWLEN && idx < sz_read; idx++)
+			ascii[idx] = isgraph(b[idx]) ? b[idx] : '.';
 		ascii[idx] = '\0';
 		html_txt(ascii);
 		html("</td></tr>\n");
 	}
 	html("</table>\n");
+	return;
+err:
+	html_txt("Error reading content");
 }
 
 static void set_title_from_path(const char *path)
@@ -118,21 +133,64 @@ static void set_title_from_path(const char *path)
 static void print_object(const unsigned char *sha1, char *path, const char *basename, const char *rev)
 {
 	enum object_type type;
-	char *buf;
 	unsigned long size;
+	struct git_istream *st;
+	char *buf;
+	ssize_t sz_read, buf_size;
+	int binary;
 
-	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD) {
+	st = open_istream(sha1, &type, &size, NULL);
+	if (!st) {
 		cgit_print_error_page(404, "Not found",
 			"Bad object name: %s", sha1_to_hex(sha1));
 		return;
 	}
 
-	buf = read_sha1_file(sha1, &type, &size);
+	/*
+	 * Read in 16KiB blocks, but don't overallocate if the total size is
+	 * smaller than that and reserve space for a terminating NUL for text
+	 * buffers.
+	 */
+	buf_size = 16 * 1024;
+	if (buf_size > size)
+		buf_size = size + 1;
+	buf = malloc(buf_size);
 	if (!buf) {
 		cgit_print_error_page(500, "Internal server error",
-			"Error reading object %s", sha1_to_hex(sha1));
-		return;
+			"Out of memory");
+		goto err;
+	}
+
+	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
+		cgit_print_error_page(400, "Bad request",
+			"blob size (%ldKB) exceeds display size limit (%dKB).",
+				size / 1024, ctx.cfg.max_blob_size);
+		goto err;
+	}
+
+	sz_read = read_istream(st, buf, buf_size);
+	if (sz_read < 0)
+		goto err;
+	binary = buffer_is_binary(buf, sz_read);
+	fprintf(stderr, "buffer_is_binary: %d sz_read=%zd\n", binary, sz_read);
+	if (!binary && sz_read < size) {
+		/* Text files must be read in full */
+		char *new_buf = realloc(buf, size + 1);
+		if (!new_buf) {
+			cgit_print_error_page(500, "Internal server error",
+				"Out of memory");
+			goto err;
+		}
+
+		buf = new_buf;
+		while (sz_read < size) {
+			ssize_t r = read_istream(st, buf + sz_read, size - sz_read);
+			fprintf(stderr, "read_stream +%zd %zd\n", sz_read, size - sz_read);
+			if (r <= 0)
+				goto err;
+
+			sz_read += r;
+		}
 	}
 
 	set_title_from_path(path);
@@ -143,16 +201,16 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 		        rev, path);
 	html(")\n");
 
-	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
-		htmlf("<div class='error'>blob size (%ldKB) exceeds display size limit (%dKB).</div>",
-				size / 1024, ctx.cfg.max_blob_size);
-		return;
+	if (binary) {
+		print_binary_stream(st, buf, buf_size, sz_read);
+	} else {
+		buf[size] = '\0';
+		print_text_buffer(basename, buf, size);
 	}
 
-	if (buffer_is_binary(buf, size))
-		print_binary_buffer(buf, size);
-	else
-		print_text_buffer(basename, buf, size);
+err:
+	close_istream(st);
+	free(buf);
 }
 
 
