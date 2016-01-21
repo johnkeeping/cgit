@@ -62,11 +62,14 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 
 int cgit_print_file(char *path, const char *head, int file_only)
 {
+	static char buf[1024 * 16];
 	unsigned char sha1[20];
 	enum object_type type;
-	char *buf;
 	unsigned long size;
 	struct commit *commit;
+	struct git_istream *st;
+	size_t sz_read;
+	int result = -1;
 	struct pathspec_item path_items = {
 		.match = path,
 		.len = strlen(path)
@@ -90,17 +93,25 @@ int cgit_print_file(char *path, const char *head, int file_only)
 		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 		if (!walk_tree_ctx.found_path)
 			return -1;
-		type = sha1_object_info(sha1, &size);
 	}
 	if (type == OBJ_BAD)
 		return -1;
-	buf = read_sha1_file(sha1, &type, &size);
-	if (!buf)
+	st = open_istream(sha1, &type, &size, NULL);
+	if (!st)
 		return -1;
-	buf[size] = '\0';
-	html_raw(buf, size);
-	free(buf);
-	return 0;
+	for (;;) {
+		sz_read = read_istream(st, buf, sizeof(buf));
+		if (sz_read == 0)
+			break;
+		if (sz_read < 0)
+			goto err;
+		html_raw(buf, sz_read);
+	}
+	result = 0;
+
+err:
+	close_istream(st);
+	return result;
 }
 
 void cgit_print_blob(const char *hex, char *path, const char *head, int file_only)
