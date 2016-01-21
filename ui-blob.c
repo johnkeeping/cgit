@@ -116,11 +116,13 @@ err:
 
 void cgit_print_blob(const char *hex, char *path, const char *head, int file_only)
 {
+	static char buf[1024 * 16];
 	unsigned char sha1[20];
 	enum object_type type;
-	char *buf;
 	unsigned long size;
 	struct commit *commit;
+	struct git_istream *st;
+	size_t sz_read;
 	struct pathspec_item path_items = {
 		.match = path,
 		.len = path ? strlen(path) : 0
@@ -155,24 +157,21 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 	if ((!hex) && type == OBJ_COMMIT && path) {
 		commit = lookup_commit_reference(sha1);
 		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
-		type = sha1_object_info(sha1,&size);
 	}
 
-	if (type == OBJ_BAD) {
+	st = open_istream(sha1, &type, &size, NULL);
+	if (!st) {
 		cgit_print_error_page(404, "Not found",
 				"Bad object name: %s", hex);
 		return;
 	}
 
-	buf = read_sha1_file(sha1, &type, &size);
-	if (!buf) {
-		cgit_print_error_page(500, "Internal server error",
-				"Error reading object %s", hex);
-		return;
-	}
+	sz_read = read_istream(st, buf, sizeof(buf));
+	if (sz_read < 0)
+		goto err;
 
 	buf[size] = '\0';
-	if (buffer_is_binary(buf, size))
+	if (buffer_is_binary(buf, sz_read))
 		ctx.page.mimetype = "application/octet-stream";
 	else
 		ctx.page.mimetype = "text/plain";
@@ -181,6 +180,17 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 	html("X-Content-Type-Options: nosniff\n");
 	html("Content-Security-Policy: default-src 'none'\n");
 	cgit_print_http_headers();
-	html_raw(buf, size);
-	free(buf);
+	while (sz_read) {
+		html_raw(buf, sz_read);
+		sz_read = read_istream(st, buf, sizeof(buf));
+		if (sz_read < 0)
+			goto err;
+	}
+
+	goto done;
+err:
+	cgit_print_error_page(500, "Internal server error",
+			"Error reading object %s", hex);
+done:
+	close_istream(st);
 }
