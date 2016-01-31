@@ -94,6 +94,14 @@ static void fprintf_exec_filter(struct cgit_filter *base, FILE *f, const char *p
 	fprintf(f, "%sexec:%s\n", prefix, filter->cmd);
 }
 
+static void bypass_exec_filter(struct cgit_filter *base, const char *txt)
+{
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
+	size_t len = strlen(txt);
+	if (write(filter->old_stdout, txt, len) != len)
+		die_errno("write error on html output");
+}
+
 static void cleanup_exec_filter(struct cgit_filter *base)
 {
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
@@ -129,6 +137,7 @@ void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **ar
 	filter->base.open = open_exec_filter;
 	filter->base.close = close_exec_filter;
 	filter->base.fprintf = fprintf_exec_filter;
+	filter->base.bypass = bypass_exec_filter;
 	filter->base.cleanup = cleanup_exec_filter;
 	filter->cmd = cmd;
 	filter->argv = argv;
@@ -344,6 +353,12 @@ static void fprintf_lua_filter(struct cgit_filter *base, FILE *f, const char *pr
 	fprintf(f, "%slua:%s\n", prefix, filter->script_file);
 }
 
+static void bypass_lua_filter(struct cgit_filter *base, const char *txt)
+{
+	size_t len = strlen(txt);
+	if (libc_write(STDOUT_FILENO, txt, len) != len)
+		die_errno("write error on html output");
+}
 
 static struct cgit_filter *new_lua_filter(const char *cmd, int argument_count)
 {
@@ -354,6 +369,7 @@ static struct cgit_filter *new_lua_filter(const char *cmd, int argument_count)
 	filter->base.open = open_lua_filter;
 	filter->base.close = close_lua_filter;
 	filter->base.fprintf = fprintf_lua_filter;
+	filter->base.bypass = bypass_lua_filter;
 	filter->base.cleanup = cleanup_lua_filter;
 	filter->base.argument_count = argument_count;
 	filter->script_file = xstrdup(cmd);
@@ -381,6 +397,14 @@ int cgit_close_filter(struct cgit_filter *filter)
 	if (!filter)
 		return 0;
 	return filter->close(filter);
+}
+
+void cgit_bypass_filter(struct cgit_filter *filter, const char *txt)
+{
+	if (!filter)
+		html(txt);
+	else
+		filter->bypass(filter, txt);
 }
 
 void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)

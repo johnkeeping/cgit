@@ -62,6 +62,7 @@ struct cgit_filter {
 	int (*open)(struct cgit_filter *, va_list ap);
 	int (*close)(struct cgit_filter *);
 	void (*fprintf)(struct cgit_filter *, FILE *, const char *prefix);
+	void (*bypass)(struct cgit_filter *, const char *txt);
 	void (*cleanup)(struct cgit_filter *);
 	int argument_count;
 };
