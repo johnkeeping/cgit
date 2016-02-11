@@ -11,17 +11,6 @@ merge blame
   Final step to completely avoid caching error pages, but I'm not sure we want
   this; the existing behaviour of using "cache-dynamic-ttl" may be enough.
 
-merge ident-tz
-
-  Show timestamps in the originator's timezone instead of the server's
-  when the "local-time" option is not enabled.
-
-  This changes the format from "%Y-%m-%d %H:%M:%S (%Z)" to something
-  more like RFC2822, which breaks the layout of right-aligned date
-  fields.  Ideally we need to update git.git so that DATE_LOCAL is a
-  modifier rather than a separate mode, otherwise we will be using a
-  different format in local and originator time formatting.
-
 . merge streaming
 
   WIP converting to Git's streaming interface for large blobs.
