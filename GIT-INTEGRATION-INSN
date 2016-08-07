@@ -1,5 +1,14 @@
 base origin/master
 
+merge single-element-tree
+
+  Collapse single-element tree paths for more efficient navication.
+
+merge fix-configfile-eof
+
+  Fix a Coverity defect that could result in an infinite loop on insane
+  platforms.
+
 merge patch-path-limit
 
   Fix a (2.5 year old!) regression in patch view's ability to limit by path.
