@@ -9,6 +9,10 @@ merge fix-configfile-eof
   Fix a Coverity defect that could result in an infinite loop on insane
   platforms.
 
+merge c89-fixes
+
+  Fix a few decl-after-statement warnings.
+
 merge patch-path-limit
 
   Fix a (2.5 year old!) regression in patch view's ability to limit by path.
