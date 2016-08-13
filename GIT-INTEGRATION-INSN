@@ -17,6 +17,10 @@ merge patch-path-limit
 
   Fix a (2.5 year old!) regression in patch view's ability to limit by path.
 
+merge coverity-fixes
+
+  Fix a couple of issues detected by Coverity.
+
 merge blame
 
   In its own branch upstream.  May need changing to avoid exec'ing git-blame.
