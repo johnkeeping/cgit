@@ -238,7 +238,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 			 oid_to_hex(&commit->object.oid), ctx.qry.vpath);
 	show_commit_decorations(commit);
 	html("</td><td>");
-	cgit_open_filter(ctx.repo->email_filter, info->author_email, "log");
+	cgit_open_email_filter(info->author_email, "log");
 	html_txt(info->author);
 	cgit_close_filter(ctx.repo->email_filter);
 

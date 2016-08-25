@@ -47,7 +47,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
-	cgit_open_filter(ctx.repo->email_filter, info->author_email, "commit");
+	cgit_open_email_filter(info->author_email, "commit");
 	html_txt(info->author);
 	if (!ctx.cfg.noplainemail) {
 		html(" ");
@@ -59,7 +59,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 				cgit_date_mode(DATE_ISO8601)));
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
-	cgit_open_filter(ctx.repo->email_filter, info->committer_email, "commit");
+	cgit_open_email_filter(info->committer_email, "commit");
 	html_txt(info->committer);
 	if (!ctx.cfg.noplainemail) {
 		html(" ");
