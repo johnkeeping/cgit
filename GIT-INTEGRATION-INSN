@@ -2,7 +2,11 @@ base origin/master
 
 merge single-element-tree
 
-  Collapse single-element tree paths for more efficient navication.
+  Collapse single-element tree paths for more efficient navigation.
+
+merge jk/email-angle-brackets
+
+  Remove angle brackets from our internal representation of email addresses.
 
 merge fix-configfile-eof
 
