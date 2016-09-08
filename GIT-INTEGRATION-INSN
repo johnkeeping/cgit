@@ -8,6 +8,10 @@ merge jk/email-angle-brackets
 
   Remove angle brackets from our internal representation of email addresses.
 
+merge render-mode
+
+  Allow including rendered content in ui-blob.
+
 merge fix-configfile-eof
 
   Fix a Coverity defect that could result in an infinite loop on insane
