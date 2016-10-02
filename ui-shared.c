@@ -722,7 +722,7 @@ static void print_rel_vcs_link(const char *url)
 
 void cgit_print_docstart(void)
 {
-	char *host = cgit_hosturl();
+	char *host;
 
 	if (ctx.cfg.embedded) {
 		if (ctx.cfg.header)
@@ -747,6 +747,7 @@ void cgit_print_docstart(void)
 		html_attr(ctx.cfg.favicon);
 		html("'/>\n");
 	}
+	host = cgit_hosturl();
 	if (host && ctx.repo && ctx.qry.head) {
 		char *fileurl;
 		struct strbuf sb = STRBUF_INIT;
