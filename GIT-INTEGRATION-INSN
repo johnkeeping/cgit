@@ -1,5 +1,7 @@
 base origin/master
 
+merge jk/ignore-sigpipe
+
 merge single-element-tree
 
   Collapse single-element tree paths for more efficient navigation.
