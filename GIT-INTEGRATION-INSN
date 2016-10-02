@@ -2,10 +2,6 @@ base origin/master
 
 merge jk/ignore-sigpipe
 
-merge single-element-tree
-
-  Collapse single-element tree paths for more efficient navigation.
-
 merge jk/email-angle-brackets
 
   Remove angle brackets from our internal representation of email addresses.
@@ -13,15 +9,6 @@ merge jk/email-angle-brackets
 merge render-mode
 
   Allow including rendered content in ui-blob.
-
-merge fix-configfile-eof
-
-  Fix a Coverity defect that could result in an infinite loop on insane
-  platforms.
-
-merge c89-fixes
-
-  Fix a few decl-after-statement warnings.
 
 merge patch-path-limit
 
