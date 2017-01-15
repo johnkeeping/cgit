@@ -2,6 +2,10 @@ base origin/master
 
 merge jk/ignore-sigpipe
 
+merge atom-quote-url
+
+  Fix escaping an attribute value in the Atom feed.
+
 merge jk/email-angle-brackets
 
   Remove angle brackets from our internal representation of email addresses.
@@ -9,6 +13,10 @@ merge jk/email-angle-brackets
 merge render-mode
 
   Allow including rendered content in ui-blob.
+
+merge afl
+
+  Experiment to allow using AFL to fuzz CGit.
 
 . merge blame
 
