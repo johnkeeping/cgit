@@ -17,6 +17,8 @@
 #include "ui-summary.h"
 #include "scan-tree.h"
 
+#include <err.h>
+
 const char *cgit_version = CGIT_VERSION;
 
 static void add_mimetype(const char *name, const char *value)
@@ -938,6 +940,27 @@ out:
 	strbuf_release(&cached_rc);
 }
 
+static char *read_query_from_stdin(void)
+{
+	char *qry = NULL;
+	size_t n = 0;
+
+	errno = 0;
+	if (getline(&qry, &n, stdin) < 0) {
+		if (!feof(stdin) || errno)
+			err(1, "failed to read query file");
+
+		free(qry);
+		qry = xstrdup("");
+	}
+
+	n = strlen(qry);
+	while (n && (qry[n - 1] == '\r' || qry[n - 1] == '\n'))
+		qry[--n] = '\0';
+
+	return qry;
+}
+
 static void cgit_parse_args(int argc, const char **argv)
 {
 	int i;
@@ -970,6 +993,8 @@ static void cgit_parse_args(int argc, const char **argv)
 			ctx.env.no_http = "1";
 		} else if (skip_prefix(argv[i], "--query=", &arg)) {
 			ctx.qry.raw = xstrdup(arg);
+		} else if (!strcmp(argv[i], "--stdin-query")) {
+			ctx.qry.raw = read_query_from_stdin();
 		} else if (skip_prefix(argv[i], "--repo=", &arg)) {
 			ctx.qry.repo = xstrdup(arg);
 		} else if (skip_prefix(argv[i], "--page=", &arg)) {
