@@ -37,7 +37,7 @@ merge afl
 
   This appears to regress performance notably for moderately sized files.
 
-merge runtime-sendtime
+merge runtime-sendfile
 
   Allow the use of sendfile(2) to be disabled in cgitrc.
 
