@@ -90,7 +90,10 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 
 	while ((commit = get_revision(&rev)) != NULL) {
 		log_tree_commit(&rev, commit);
-		printf("-- \ncgit %s\n\n", cgit_version);
+		if (!ctx.cfg.patch_signature)
+			printf("-- \ncgit %s\n\n", cgit_version);
+		else if (*ctx.cfg.patch_signature)
+			printf("-- \n%s\n\n", ctx.cfg.patch_signature);
 	}
 
 	fflush(stdout);

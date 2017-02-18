@@ -201,6 +201,7 @@ struct cgit_config {
 	char *logo_link;
 	char *mimetype_file;
 	char *module_link;
+	char *patch_signature;
 	char *project_list;
 	struct string_list readme;
 	char *robots;

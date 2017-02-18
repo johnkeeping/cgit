@@ -145,6 +145,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
 		ctx.cfg.module_link = xstrdup(value);
+	else if (!strcmp(name, "patch-signature"))
+		ctx.cfg.patch_signature = xstrdup(value);
 	else if (!strcmp(name, "strict-export"))
 		ctx.cfg.strict_export = xstrdup(value);
 	else if (!strcmp(name, "virtual-root")) {

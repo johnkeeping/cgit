@@ -331,6 +331,11 @@ noheader::
 	Flag which, when set to "1", will make cgit omit the standard header
 	on all pages. Default value: none. See also: "embedded".
 
+patch-signature::
+	Signature to add at the bottom of patches.  Specify the empty string
+	to omit the signature block completely.
+	Default value: "cgit <version>".
+
 project-list::
 	A list of subdirectories inside of scan-path, relative to it, that
 	should loaded as git repositories. This must be defined prior to
