@@ -1,5 +1,9 @@
 base origin/master
 
+merge fix-no-repo-segv
+
+  Fix a segfault with certain invalid combinations of URL parameters.
+
 merge jk/ignore-sigpipe
 
 merge atom-quote-url
