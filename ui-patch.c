@@ -17,7 +17,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	struct rev_info rev;
 	struct commit *commit;
 	struct object_id new_rev_oid, old_rev_oid;
-	char rev_range[2 * 40 + 3];
+	char rev_range[2 * GIT_MAX_HEXSZ + 3];
 	const char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range, "--", prefix, NULL };
 	int rev_argc = ARRAY_SIZE(rev_argv) - 1;
 	char *patchname;
@@ -58,7 +58,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	}
 
 	if (is_null_oid(&old_rev_oid)) {
-		memcpy(rev_range, oid_to_hex(&new_rev_oid), GIT_SHA1_HEXSZ + 1);
+		memcpy(rev_range, oid_to_hex(&new_rev_oid), GIT_MAX_HEXSZ + 1);
 	} else {
 		sprintf(rev_range, "%s..%s", oid_to_hex(&old_rev_oid),
 			oid_to_hex(&new_rev_oid));
