@@ -129,7 +129,7 @@ static int end_of_header(const char *p)
 
 struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
-	const int sha1hex_len = 40;
+	const int sha1hex_len = GIT_SHA1_HEXSZ;
 	struct commitinfo *ret;
 	const char *p = get_cached_commit_buffer(commit, NULL);
 	const char *t;

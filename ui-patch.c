@@ -17,7 +17,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	struct rev_info rev;
 	struct commit *commit;
 	struct object_id new_rev_oid, old_rev_oid;
-	char rev_range[2 * 40 + 3];
+	char rev_range[2 * GIT_SHA1_HEXSZ + 3];
 	const char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range, "--", prefix, NULL };
 	int rev_argc = ARRAY_SIZE(rev_argv) - 1;
 	char *patchname;
