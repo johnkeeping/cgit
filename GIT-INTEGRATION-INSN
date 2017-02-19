@@ -4,8 +4,6 @@ merge fix-no-repo-segv
 
   Fix a segfault with certain invalid combinations of URL parameters.
 
-merge jk/ignore-sigpipe
-
 merge atom-quote-url
 
   Fix escaping an attribute value in the Atom feed.
@@ -14,6 +12,8 @@ merge jk/email-angle-brackets
 
   Remove angle brackets from our internal representation of email addresses.
 
+merge jk/ignore-sigpipe
+
 merge render-mode
 
   Allow including rendered content in ui-blob.
@@ -21,6 +21,14 @@ merge render-mode
 merge afl
 
   Experiment to allow using AFL to fuzz CGit.
+
+merge git-2.12
+
+  Preparation for updating to Git v2.12.0.
+
+merge no-hardcoded-oid-sizes
+
+  Use #define'd constants for SHA1 sizes.
 
 . merge blame
 
