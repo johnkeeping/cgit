@@ -33,7 +33,7 @@ struct cache_slot {
 	const char *lock_name;
 	int match;
 	struct stat cache_st;
-	int bufsize;
+	ssize_t bufsize;
 	char buf[CACHE_BUFSIZE];
 };
 
@@ -44,7 +44,6 @@ struct cache_slot {
 static int open_slot(struct cache_slot *slot)
 {
 	char *bufz;
-	ssize_t bufkeylen = -1;
 
 	slot->cache_fd = open(slot->cache_name, O_RDONLY);
 	if (slot->cache_fd == -1)
@@ -58,12 +57,12 @@ static int open_slot(struct cache_slot *slot)
 		return errno;
 
 	bufz = memchr(slot->buf, 0, slot->bufsize);
-	if (bufz)
-		bufkeylen = bufz - slot->buf;
+	if (bufz && slot->key) {
+		size_t bufkeylen = bufz - slot->buf;
 
-	if (slot->key)
 		slot->match = bufkeylen == slot->keylen &&
 		    !memcmp(slot->key, slot->buf, bufkeylen + 1);
+	}
 
 	return 0;
 }
