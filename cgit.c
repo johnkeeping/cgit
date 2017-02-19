@@ -79,13 +79,13 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		item->util = xstrdup(value);
 	} else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
-	else if (!strcmp(name, "readme") && value != NULL) {
+	else if (!strcmp(name, "readme")) {
 		if (repo->readme.items == ctx.cfg.readme.items)
 			memset(&repo->readme, 0, sizeof(repo->readme));
 		string_list_append(&repo->readme, xstrdup(value));
-	} else if (!strcmp(name, "logo") && value != NULL)
+	} else if (!strcmp(name, "logo"))
 		repo->logo = xstrdup(value);
-	else if (!strcmp(name, "logo-link") && value != NULL)
+	else if (!strcmp(name, "logo-link"))
 		repo->logo_link = xstrdup(value);
 	else if (!strcmp(name, "hide"))
 		repo->hide = atoi(value);
