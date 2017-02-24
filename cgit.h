@@ -382,6 +382,8 @@ extern struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filterty
 extern void cgit_cleanup_filters(void);
 extern void cgit_init_filters(void);
 
+extern void cgit_open_email_filter(const char *email, const char *origin);
+
 extern void cgit_prepare_repo_env(struct cgit_repo * repo);
 
 extern int readfile(const char *path, char **buf, size_t *size);

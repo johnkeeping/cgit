@@ -455,3 +455,8 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 
 	die("Invalid filter type: %.*s", (int) len, cmd);
 }
+
+void cgit_open_email_filter(const char *email, const char *origin)
+{
+	cgit_open_filter(ctx.repo->email_filter, email, origin);
+}
