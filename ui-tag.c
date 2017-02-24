@@ -86,8 +86,9 @@ void cgit_print_tag(char *revname)
 			cgit_open_email_filter(info->tagger_email, "tag");
 			html_txt(info->tagger);
 			if (info->tagger_email && !ctx.cfg.noplainemail) {
-				html(" ");
+				html(" &lt;");
 				html_txt(info->tagger_email);
+				html("&gt;");
 			}
 			cgit_close_filter(ctx.repo->email_filter);
 			html("</td></tr>\n");

@@ -15,7 +15,6 @@ static void add_entry(struct commit *commit, const char *host)
 {
 	char delim = '&';
 	char *hex;
-	char *mail, *t, *t2;
 	struct commitinfo *info;
 
 	info = cgit_parse_commit(commit);
@@ -35,19 +34,9 @@ static void add_entry(struct commit *commit, const char *host)
 		html("</name>\n");
 	}
 	if (info->author_email && !ctx.cfg.noplainemail) {
-		mail = xstrdup(info->author_email);
-		t = strchr(mail, '<');
-		if (t)
-			t++;
-		else
-			t = mail;
-		t2 = strchr(t, '>');
-		if (t2)
-			*t2 = '\0';
 		html("<email>");
-		html_txt(t);
+		html_txt(info->author_email);
 		html("</email>\n");
-		free(mail);
 	}
 	html("</author>\n");
 	html("<published>");

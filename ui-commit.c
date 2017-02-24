@@ -50,8 +50,9 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_open_email_filter(info->author_email, "commit");
 	html_txt(info->author);
 	if (!ctx.cfg.noplainemail) {
-		html(" ");
+		html(" &lt;");
 		html_txt(info->author_email);
+		html("&gt;");
 	}
 	cgit_close_filter(ctx.repo->email_filter);
 	html("</td><td class='right'>");
@@ -62,8 +63,9 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_open_email_filter(info->committer_email, "commit");
 	html_txt(info->committer);
 	if (!ctx.cfg.noplainemail) {
-		html(" ");
+		html(" &lt;");
 		html_txt(info->committer_email);
+		html("&gt;");
 	}
 	cgit_close_filter(ctx.repo->email_filter);
 	html("</td><td class='right'>");
