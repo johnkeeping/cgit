@@ -24,6 +24,7 @@
 #include <utf8.h>
 #include <notes.h>
 #include <graph.h>
+#include <mailmap.h>
 
 /* Add isgraph(x) to Git's sane ctype support (see git-compat-util.h) */
 #undef isgraph
@@ -369,6 +370,8 @@ extern char *fmtalloc(const char *format,...);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
 extern void cgit_parse_url(const char *url);
+extern int cgit_read_mailmap(struct string_list *map);
+extern int cgit_map_user(struct string_list *map, const char **email, const char **name);
 
 extern const char *cgit_repobasename(const char *reponame);
 

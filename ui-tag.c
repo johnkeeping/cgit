@@ -44,6 +44,8 @@ void cgit_print_tag(char *revname)
 	struct strbuf fullref = STRBUF_INIT;
 	struct object_id oid;
 	struct object *obj;
+	struct string_list mailmap = STRING_LIST_INIT_NODUP;
+	const char *tagger, *tagger_email;
 
 	if (!revname)
 		revname = ctx.qry.head;
@@ -82,12 +84,16 @@ void cgit_print_tag(char *revname)
 			html("</td></tr>\n");
 		}
 		if (info->tagger) {
+			cgit_read_mailmap(&mailmap);
+			tagger = info->tagger;
+			tagger_email = info->tagger_email;
+			cgit_map_user(&mailmap, &tagger_email, &tagger);
 			html("<tr><td>tagged by</td><td>");
-			cgit_open_email_filter(info->tagger_email, "tag");
-			html_txt(info->tagger);
-			if (info->tagger_email && !ctx.cfg.noplainemail) {
+			cgit_open_email_filter(tagger_email, "tag");
+			html_txt(tagger);
+			if (tagger_email && !ctx.cfg.noplainemail) {
 				html(" &lt;");
-				html_txt(info->tagger_email);
+				html_txt(tagger_email);
 				html("&gt;");
 			}
 			cgit_close_filter(ctx.repo->email_filter);

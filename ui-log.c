@@ -171,6 +171,7 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 static void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
+	const char *author, *author_email;
 	int columns = revs->graph ? 4 : 3;
 	struct strbuf graphbuf = STRBUF_INIT;
 	struct strbuf msgbuf = STRBUF_INIT;
@@ -238,8 +239,11 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 			 oid_to_hex(&commit->object.oid), ctx.qry.vpath);
 	show_commit_decorations(commit);
 	html("</td><td>");
-	cgit_open_email_filter(info->author_email, "log");
-	html_txt(info->author);
+	author = info->author;
+	author_email = info->author_email;
+	cgit_map_user(revs->mailmap, &author_email, &author);
+	cgit_open_email_filter(author_email, "log");
+	html_txt(author);
 	cgit_close_filter(ctx.repo->email_filter);
 
 	if (revs->graph) {
@@ -361,6 +365,7 @@ static char *next_token(char **src)
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
 		    char *path, int pager, int commit_graph, int commit_sort)
 {
+	struct string_list mailmap = STRING_LIST_INIT_NODUP;
 	struct rev_info rev;
 	struct commit *commit;
 	struct argv_array rev_argv = ARGV_ARRAY_INIT;
@@ -444,6 +449,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		DIFF_XDL_SET(&rev.diffopt, IGNORE_WHITESPACE);
 
 	compile_grep_patterns(&rev.grep_filter);
+	cgit_read_mailmap(&mailmap);
+	rev.mailmap = &mailmap;
 	prepare_revision_walk(&rev);
 
 	if (pager) {

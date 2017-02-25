@@ -11,13 +11,18 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static void add_entry(struct commit *commit, const char *host)
+static void add_entry(struct commit *commit, const char *host,
+		      struct string_list *mailmap)
 {
 	char delim = '&';
 	char *hex;
 	struct commitinfo *info;
+	const char *author, *author_email;
 
 	info = cgit_parse_commit(commit);
+	author = info->author;
+	author_email = info->author_email;
+	cgit_map_user(mailmap, &author_email, &author);
 	hex = oid_to_hex(&commit->object.oid);
 	html("<entry>\n");
 	html("<title>");
@@ -28,14 +33,14 @@ static void add_entry(struct commit *commit, const char *host)
                     date_mode_from_type(DATE_ISO8601_STRICT)));
 	html("</updated>\n");
 	html("<author>\n");
-	if (info->author) {
+	if (author) {
 		html("<name>");
-		html_txt(info->author);
+		html_txt(author);
 		html("</name>\n");
 	}
-	if (info->author_email && !ctx.cfg.noplainemail) {
+	if (author_email && !ctx.cfg.noplainemail) {
 		html("<email>");
-		html_txt(info->author_email);
+		html_txt(author_email);
 		html("</email>\n");
 	}
 	html("</author>\n");
@@ -78,6 +83,7 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	const char *argv[] = {NULL, tip, NULL, NULL, NULL};
 	struct commit *commit;
 	struct rev_info rev;
+	struct string_list mailmap = STRING_LIST_INIT_NODUP;
 	int argc = 2;
 
 	if (ctx.qry.show_all)
@@ -97,6 +103,8 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	rev.show_root_diff = 0;
 	rev.max_count = max_count;
 	setup_revisions(argc, argv, &rev, NULL);
+	cgit_read_mailmap(&mailmap);
+	rev.mailmap = &mailmap;
 	prepare_revision_walk(&rev);
 
 	host = cgit_hosturl();
@@ -128,7 +136,7 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 		free(repourl);
 	}
 	while ((commit = get_revision(&rev)) != NULL) {
-		add_entry(commit, host);
+		add_entry(commit, host, &mailmap);
 		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 		commit->parents = NULL;

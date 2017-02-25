@@ -159,9 +159,10 @@ const char *cgit_find_stats_periodname(int idx)
 }
 
 static void add_commit(struct string_list *authors, struct commit *commit,
-	const struct cgit_period *period)
+	const struct cgit_period *period, struct string_list *mailmap)
 {
 	struct commitinfo *info;
+	const char *author_name, *author_email;
 	struct string_list_item *author, *item;
 	struct authorstat *authorstat;
 	struct string_list *items;
@@ -171,7 +172,10 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	uintptr_t *counter;
 
 	info = cgit_parse_commit(commit);
-	tmp = xstrdup(info->author);
+	author_name = info->author;
+	author_email = info->author_email;
+	cgit_map_user(mailmap, &author_email, &author_name);
+	tmp = xstrdup(author_name);
 	author = string_list_insert(authors, tmp);
 	if (!author->util)
 		author->util = xcalloc(1, sizeof(struct authorstat));
@@ -209,6 +213,7 @@ static int cmp_total_commits(const void *a1, const void *a2)
 static struct string_list collect_stats(const struct cgit_period *period)
 {
 	struct string_list authors;
+	struct string_list mailmap = STRING_LIST_INIT_NODUP;
 	struct rev_info rev;
 	struct commit *commit;
 	const char *argv[] = {NULL, ctx.qry.head, NULL, NULL, NULL, NULL};
@@ -237,10 +242,12 @@ static struct string_list collect_stats(const struct cgit_period *period)
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
 	setup_revisions(argc, argv, &rev, NULL);
+	cgit_read_mailmap(&mailmap);
+	rev.mailmap = &mailmap;
 	prepare_revision_walk(&rev);
 	memset(&authors, 0, sizeof(authors));
 	while ((commit = get_revision(&rev)) != NULL) {
-		add_commit(&authors, commit, period);
+		add_commit(&authors, commit, period, &mailmap);
 		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 		commit->parents = NULL;

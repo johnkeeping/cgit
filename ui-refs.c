@@ -11,6 +11,8 @@
 #include "html.h"
 #include "ui-shared.h"
 
+static struct string_list mailmap = STRING_LIST_INIT_DUP;
+
 static inline int cmp_age(int age1, int age2)
 {
 	/* age1 and age2 are assumed to be non-negative */
@@ -57,6 +59,7 @@ static int cmp_tag_age(const void *a, const void *b)
 static int print_branch(struct refinfo *ref)
 {
 	struct commitinfo *info = ref->commit;
+	const char *author, *author_email;
 	char *name = (char *)ref->refname;
 
 	if (!info)
@@ -67,10 +70,13 @@ static int print_branch(struct refinfo *ref)
 	html("</td><td>");
 
 	if (ref->object->type == OBJ_COMMIT) {
+		author = info->author;
+		author_email = info->author_email;
+		cgit_map_user(&mailmap, &author_email, &author);
 		cgit_commit_link(info->subject, NULL, NULL, name, NULL, NULL);
 		html("</td><td>");
-		cgit_open_email_filter(info->author_email, "refs");
-		html_txt(info->author);
+		cgit_open_email_filter(author_email, "refs");
+		html_txt(author);
 		cgit_close_filter(ctx.repo->email_filter);
 		html("</td><td colspan='2'>");
 		cgit_print_age(info->committer_date, info->committer_tz, -1);
@@ -122,6 +128,8 @@ static int print_tag(struct refinfo *ref)
 {
 	struct tag *tag = NULL;
 	struct taginfo *info = NULL;
+	const char *tagger, *tagger_email;
+	const char *author, *author_email;
 	char *name = (char *)ref->refname;
 	struct object *obj = ref->object;
 
@@ -143,13 +151,19 @@ static int print_tag(struct refinfo *ref)
 	html("</td><td>");
 	if (info) {
 		if (info->tagger) {
-			cgit_open_email_filter(info->tagger_email, "refs");
-			html_txt(info->tagger);
+			tagger = info->tagger;
+			tagger_email = info->tagger_email;
+			cgit_map_user(&mailmap, &tagger_email, &tagger);
+			cgit_open_email_filter(tagger_email, "refs");
+			html_txt(tagger);
 			cgit_close_filter(ctx.repo->email_filter);
 		}
 	} else if (ref->object->type == OBJ_COMMIT) {
-		cgit_open_email_filter(ref->commit->author_email, "refs");
-		html_txt(ref->commit->author);
+		author = ref->commit->author;
+		author_email = ref->commit->author_email;
+		cgit_map_user(&mailmap, &author_email, &author);
+		cgit_open_email_filter(author_email, "refs");
+		html_txt(author);
 		cgit_close_filter(ctx.repo->email_filter);
 	}
 	html("</td><td colspan='2'>");
@@ -194,6 +208,9 @@ void cgit_print_branches(int maxcount)
 	if (ctx.repo->branch_sort == 0)
 		qsort(list.refs, maxcount, sizeof(*list.refs), cmp_ref_name);
 
+	if (!mailmap.items) {
+		cgit_read_mailmap(&mailmap);
+	}
 	for (i = 0; i < maxcount; i++)
 		print_branch(list.refs[i]);
 
@@ -219,6 +236,9 @@ void cgit_print_tags(int maxcount)
 	else if (maxcount > list.count)
 		maxcount = list.count;
 	print_tag_header();
+	if (!mailmap.items) {
+		cgit_read_mailmap(&mailmap);
+	}
 	for (i = 0; i < maxcount; i++)
 		print_tag(list.refs[i]);
 

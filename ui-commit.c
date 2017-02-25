@@ -18,8 +18,11 @@ void cgit_print_commit(char *hex, const char *prefix)
 	struct commit *commit, *parent;
 	struct commitinfo *info, *parent_info;
 	struct commit_list *p;
+	struct string_list mailmap = STRING_LIST_INIT_NODUP;
 	struct strbuf notes = STRBUF_INIT;
 	struct object_id oid;
+	const char *author, *author_email;
+	const char *committer, *committer_email;
 	char *tmp, *tmp2;
 	int parents = 0;
 
@@ -38,6 +41,13 @@ void cgit_print_commit(char *hex, const char *prefix)
 		return;
 	}
 	info = cgit_parse_commit(commit);
+	cgit_read_mailmap(&mailmap);
+	author = info->author;
+	author_email = info->author_email;
+	cgit_map_user(&mailmap, &author_email, &author);
+	committer = info->committer;
+	committer_email = info->committer_email;
+	cgit_map_user(&mailmap, &committer_email, &committer);
 
 	format_display_notes(&oid, &notes, PAGE_ENCODING, 0);
 
@@ -47,11 +57,11 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
-	cgit_open_email_filter(info->author_email, "commit");
-	html_txt(info->author);
+	cgit_open_email_filter(author_email, "commit");
+	html_txt(author);
 	if (!ctx.cfg.noplainemail) {
 		html(" &lt;");
-		html_txt(info->author_email);
+		html_txt(author_email);
 		html("&gt;");
 	}
 	cgit_close_filter(ctx.repo->email_filter);
@@ -60,11 +70,11 @@ void cgit_print_commit(char *hex, const char *prefix)
 				cgit_date_mode(DATE_ISO8601)));
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
-	cgit_open_email_filter(info->committer_email, "commit");
-	html_txt(info->committer);
+	cgit_open_email_filter(committer_email, "commit");
+	html_txt(committer);
 	if (!ctx.cfg.noplainemail) {
 		html(" &lt;");
-		html_txt(info->committer_email);
+		html_txt(committer_email);
 		html("&gt;");
 	}
 	cgit_close_filter(ctx.repo->email_filter);

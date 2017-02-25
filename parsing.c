@@ -83,6 +83,27 @@ static void parse_user(const char *t, char **name, char **email, unsigned long *
 	}
 }
 
+int cgit_read_mailmap(struct string_list *map)
+{
+	int ret;
+
+	ret = read_mailmap(map, NULL);
+	if (ret)
+		fprintf(stderr, "Error reading mailmap: read_mailmap() returned: %d\n", ret);
+	return ret;
+}
+
+int cgit_map_user(struct string_list *map, const char **email, const char **name)
+{
+	size_t emaillen, namelen;
+	int ret;
+
+	emaillen = strlen(*email);
+	namelen = strlen(*name);
+	ret = map_user(map, email, &emaillen, name, &namelen);
+	return ret;
+}
+
 #ifdef NO_ICONV
 #define reencode(a, b, c)
 #else
