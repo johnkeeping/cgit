@@ -295,26 +295,6 @@ void html_intoption(int value, const char *text, int selected_value)
 	html("</option>");
 }
 
-void html_link_open(const char *url, const char *title, const char *class)
-{
-	html("<a href='");
-	html_attr(url);
-	if (title) {
-		html("' title='");
-		html_attr(title);
-	}
-	if (class) {
-		html("' class='");
-		html_attr(class);
-	}
-	html("'>");
-}
-
-void html_link_close(void)
-{
-	html("</a>");
-}
-
 void html_fileperm(unsigned short mode)
 {
 	htmlf("%c%c%c", (mode & 4 ? 'r' : '-'),
