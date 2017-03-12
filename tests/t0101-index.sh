@@ -11,7 +11,7 @@ test_expect_success 'find bar description' 'grep "the bar repo" tmp'
 test_expect_success 'find foo+bar repo' 'grep ">foo+bar<" tmp'
 test_expect_success 'verify foo+bar link' 'grep "/foo+bar/" tmp'
 test_expect_success 'verify "with%20space" link' 'grep "/with%20space/" tmp'
-test_expect_failure 'no links with space in path' '! grep "href=./with space/" tmp'
+test_expect_success 'no links with space in path' '! grep "href=./with space/" tmp'
 test_expect_success 'no tree-link' '! grep "foo/tree" tmp'
 test_expect_success 'no log-link' '! grep "foo/log" tmp'
 

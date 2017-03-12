@@ -275,7 +275,6 @@ void cgit_print_repolist(void)
 	int i, columns = 3, hits = 0, header = 0;
 	char *last_section = NULL;
 	char *section;
-	char *repourl;
 	int sorted = 0;
 
 	if (!any_repos_visible()) {
@@ -330,13 +329,11 @@ void cgit_print_repolist(void)
 		htmlf("<tr><td class='%s'>",
 		      !sorted && section ? "sublevel-repo" : "toplevel-repo");
 		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
-		html("</td><td>");
-		repourl = cgit_repourl(ctx.repo->url);
-		html_link_open(repourl, NULL, NULL);
-		free(repourl);
+		html("</td><td><a href='");
+		cgit_repo_url_path(ctx.repo->url);
+		html("'>");
 		html_ntxt(ctx.cfg.max_repodesc_len, ctx.repo->desc);
-		html_link_close();
-		html("</td><td>");
+		html("</a></td><td>");
 		if (ctx.cfg.enable_index_owner) {
 			if (ctx.repo->owner_filter) {
 				cgit_open_filter(ctx.repo->owner_filter);

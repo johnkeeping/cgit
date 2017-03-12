@@ -92,12 +92,15 @@ const char *cgit_loginurl(void)
 	return login_url;
 }
 
-char *cgit_repourl(const char *reponame)
+void cgit_repo_url_path(const char *reponame)
 {
-	if (ctx.cfg.virtual_root)
-		return fmtalloc("%s%s/", ctx.cfg.virtual_root, reponame);
-	else
-		return fmtalloc("?r=%s", reponame);
+	if (ctx.cfg.virtual_root) {
+		html_url_path(ctx.cfg.virtual_root);
+		html_url_path(reponame);
+	} else {
+		html("?r=");
+		html_url_arg(reponame);
+	}
 }
 
 char *cgit_fileurl(const char *reponame, const char *pagename,
