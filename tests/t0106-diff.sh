@@ -16,4 +16,11 @@ test_expect_success 'find added line' '
 	grep "<div class=.add.>+5</div>" tmp
 '
 
+test_expect_success 'generate with%20space/diff' '
+	cgit_url "with%20space/diff" >tmp
+'
+test_expect_success 'no links with space in path' '
+	! grep "href=./with space/" tmp
+'
+
 test_done

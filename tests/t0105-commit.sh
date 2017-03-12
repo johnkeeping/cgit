@@ -33,4 +33,11 @@ test_expect_success 'root commit contains diff' '
 	grep "<div class=.add.>+1</div>" tmp
 '
 
+test_expect_success 'generate with%20space/commit' '
+	cgit_url "with%20space/commit" >tmp
+'
+test_expect_success 'no links with space in path' '
+	! grep "href=./with space/" tmp
+'
+
 test_done

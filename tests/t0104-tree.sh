@@ -29,4 +29,11 @@ test_expect_success 'verify a+b?h=1+2 link' '
 	grep "/foo+bar/tree/a+b?h=1%2b2" tmp
 '
 
+test_expect_success 'generate with%20space/tree' '
+	cgit_url "with%20space/tree" >tmp
+'
+test_expect_success 'no links with space in path' '
+	! grep "href=./with space/" tmp
+'
+
 test_done

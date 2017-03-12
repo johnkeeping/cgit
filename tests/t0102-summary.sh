@@ -22,4 +22,11 @@ test_expect_success 'clone-url expanded correctly' '
 	grep "git://example.org/bar.git" tmp
 '
 
+test_expect_success 'generate with-space summary' '
+	cgit_url "with20space" >tmp
+'
+test_expect_success 'no links with space in path' '
+	! grep "href=./with space/" tmp
+'
+
 test_done
