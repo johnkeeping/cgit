@@ -163,6 +163,7 @@ struct cgit_query {
 	char *raw;
 	char *repo;
 	char *page;
+	char *pageext;
 	char *search;
 	char *grep;
 	char *head;
@@ -280,6 +281,7 @@ struct cgit_page {
 	const char *title;
 	int status;
 	const char *statusmsg;
+	struct cgit_filter *body_filter;
 };
 
 struct cgit_environment {

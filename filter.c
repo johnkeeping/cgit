@@ -380,6 +380,8 @@ int cgit_close_filter(struct cgit_filter *filter)
 {
 	if (!filter)
 		return 0;
+
+	fflush(stdout);
 	return filter->close(filter);
 }
 

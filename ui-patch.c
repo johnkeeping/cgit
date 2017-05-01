@@ -64,8 +64,10 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 			oid_to_hex(&new_rev_oid));
 	}
 
-	patchname = fmt("%s.patch", rev_range);
-	ctx.page.mimetype = "text/plain";
+	patchname = fmt("%s.patch%s", rev_range,
+			ctx.qry.pageext ? ctx.qry.pageext : "");
+	if (!ctx.qry.pageext)
+		ctx.page.mimetype = "text/plain";
 	ctx.page.filename = patchname;
 	cgit_print_http_headers();
 
@@ -74,6 +76,8 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 			      "2001%nFrom: %an%nDate: %aD%n%w(78,0,1)Subject: "
 			      "%s%n%n%w(0)%b";
 	}
+
+	cgit_open_filter(ctx.page.body_filter);
 
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
@@ -92,4 +96,6 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 		log_tree_commit(&rev, commit);
 		printf("-- \ncgit %s\n\n", cgit_version);
 	}
+
+	cgit_close_filter(ctx.page.body_filter);
 }

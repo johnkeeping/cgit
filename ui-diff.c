@@ -447,8 +447,11 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		DIFF_OPT_SET(&diffopt, RECURSIVE);
 		diff_setup_done(&diffopt);
 
-		ctx.page.mimetype = "text/plain";
+		if (!ctx.qry.pageext)
+			ctx.page.mimetype = "text/plain";
 		cgit_print_http_headers();
+		cgit_open_filter(ctx.page.body_filter);
+
 		if (old_tree_oid) {
 			diff_tree_oid(old_tree_oid, new_tree_oid, "",
 				       &diffopt);
@@ -458,6 +461,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		diffcore_std(&diffopt);
 		diff_flush(&diffopt);
 
+		cgit_close_filter(ctx.page.body_filter);
 		return;
 	}
 

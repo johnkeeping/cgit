@@ -697,6 +697,46 @@ static inline void authenticate_cookie(void)
 	ctx.env.authenticated = cgit_close_filter(ctx.cfg.auth_filter);
 }
 
+static struct cgit_filter *create_gzip_filter(void)
+{
+	char **argv = xcalloc(3, sizeof(char *));
+	struct cgit_exec_filter *f = xmalloc(sizeof(*f));
+
+	argv[0] = xstrdup("gzip");
+	argv[1] = xstrdup("-n");
+	argv[2] = NULL;
+
+	cgit_exec_filter_init(f, argv[0], argv);
+	return &f->base;
+}
+
+struct cgit_page_compression {
+	const char *const ext;
+	const char *const mimetype;
+	struct cgit_filter *(*create)(void);
+};
+
+static const struct cgit_page_compression cgit_page_compressions[] = {
+	{ ".gz", "application/x-gzip", create_gzip_filter, },
+};
+
+static struct cgit_filter *get_page_compression(void)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(cgit_page_compressions); i++) {
+		const struct cgit_page_compression *c;
+
+		c = &cgit_page_compressions[i];
+		if (!strcmp(c->ext, ctx.qry.pageext)) {
+			ctx.page.mimetype = xstrdup(c->mimetype);
+			return c->create();
+		}
+	}
+
+	return NULL;
+}
+
 static void process_request(void)
 {
 	struct cgit_cmd *cmd;
@@ -739,6 +779,21 @@ static void process_request(void)
 	 * Otherwise, no path limit is in effect (ctx.qry.vpath = NULL).
 	 */
 	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
+
+	if (ctx.qry.pageext) {
+		if (!cmd->want_compression) {
+			cgit_print_error_page(404, "Not found",
+					"Invalid request");
+			return;
+		}
+
+		ctx.page.body_filter = get_page_compression();
+		if (!ctx.page.body_filter) {
+			cgit_print_error_page(404, "Not found",
+					"Invalid request");
+			return;
+		}
+	}
 
 	if (ctx.repo && prepare_repo_cmd())
 		return;
@@ -1010,6 +1065,21 @@ static void cgit_parse_args(int argc, const char **argv)
 	}
 }
 
+static void split_page_ext(void)
+{
+	char *dot;
+
+	if (!ctx.qry.page)
+		return;
+
+	dot = strchr(ctx.qry.page, '.');
+	if (!dot)
+		return;
+
+	ctx.qry.pageext = xstrdup(dot);
+	*dot = '\0';
+}
+
 static int calc_ttl(void)
 {
 	if (!ctx.repo)
@@ -1076,6 +1146,8 @@ int cmd_main(int argc, const char **argv)
 			ctx.qry.raw = xstrdup(ctx.qry.url);
 		cgit_parse_url(ctx.qry.url);
 	}
+
+	split_page_ext();
 
 	/* Before we go any further, we set ctx.env.authenticated by checking to see
 	 * if the supplied cookie is valid. All cookies are valid if there is no
