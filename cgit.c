@@ -23,8 +23,20 @@ static void add_mimetype(const char *name, const char *value)
 {
 	struct string_list_item *item;
 
-	item = string_list_insert(&ctx.cfg.mimetypes, xstrdup(name));
+	item = string_list_insert(&ctx.cfg.mimetypes, name);
 	item->util = xstrdup(value);
+}
+
+static void add_render_filter(const char *name, const char *cmd)
+{
+	struct string_list_item *item;
+	struct cgit_filter *filter = cgit_new_filter(cmd, RENDER);
+
+	if (!filter)
+		return;
+
+	item = string_list_insert(&ctx.cfg.render_filters, name);
+	item->util = filter;
 }
 
 static void process_cached_repolist(const char *path);
@@ -285,6 +297,8 @@ static void config_cb(const char *name, const char *value)
 			ctx.cfg.branch_sort = 0;
 	} else if (skip_prefix(name, "mimetype.", &arg))
 		add_mimetype(arg, value);
+	else if (skip_prefix(name, "render.", &arg))
+		add_render_filter(arg, value);
 	else if (!strcmp(name, "include"))
 		parse_configfile(expand_macros(value), config_cb);
 }
@@ -417,7 +431,8 @@ static void prepare_context(void)
 	ctx.page.modified = time(NULL);
 	ctx.page.expires = ctx.page.modified;
 	ctx.page.etag = NULL;
-	memset(&ctx.cfg.mimetypes, 0, sizeof(struct string_list));
+	string_list_init(&ctx.cfg.mimetypes, 1);
+	string_list_init(&ctx.cfg.render_filters, 1);
 	if (ctx.env.script_name)
 		ctx.cfg.script_name = xstrdup(ctx.env.script_name);
 	if (ctx.env.query_string)
