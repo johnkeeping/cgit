@@ -72,14 +72,10 @@ static char *substr(const char *head, const char *tail)
 static void parse_user(const char *t, char **name, char **email, unsigned long *date, int *tz)
 {
 	struct ident_split ident;
-	unsigned email_len;
 
 	if (!split_ident_line(&ident, t, strchrnul(t, '\n') - t)) {
 		*name = substr(ident.name_begin, ident.name_end);
-
-		email_len = ident.mail_end - ident.mail_begin;
-		*email = xmalloc(strlen("<") + email_len + strlen(">") + 1);
-		sprintf(*email, "<%.*s>", email_len, ident.mail_begin);
+		*email = substr(ident.mail_begin, ident.mail_end);
 
 		if (ident.date_begin)
 			*date = strtoul(ident.date_begin, NULL, 10);
