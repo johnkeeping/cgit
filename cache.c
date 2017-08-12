@@ -81,10 +81,9 @@ static int close_slot(struct cache_slot *slot)
 	return err;
 }
 
-/* Print the content of the active cache slot (but skip the key). */
-static int print_slot(struct cache_slot *slot)
-{
 #ifdef HAVE_LINUX_SENDFILE
+static int print_slot_sendfile(struct cache_slot *slot)
+{
 	off_t start_off;
 	int ret;
 
@@ -100,7 +99,11 @@ static int print_slot(struct cache_slot *slot)
 		}
 		return 0;
 	} while (1);
-#else
+}
+#endif
+
+static int print_slot_write(struct cache_slot *slot)
+{
 	ssize_t i, j;
 
 	i = lseek(slot->cache_fd, slot->keylen + 1, SEEK_SET);
@@ -117,7 +120,16 @@ static int print_slot(struct cache_slot *slot)
 		return errno;
 	else
 		return 0;
+}
+
+/* Print the content of the active cache slot (but skip the key). */
+static int print_slot(struct cache_slot *slot)
+{
+#ifdef HAVE_LINUX_SENDFILE
+	if (ctx.cfg.enable_sendfile)
+		return print_slot_sendfile(slot);
 #endif
+	return print_slot_write(slot);
 }
 
 /* Check if the slot has expired */

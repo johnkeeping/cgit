@@ -223,6 +223,7 @@ struct cgit_config {
 	int cache_snapshot_ttl;
 	int case_sensitive_sort;
 	int embedded;
+	int enable_sendfile;
 	int enable_filter_overrides;
 	int enable_follow_links;
 	int enable_http_clone;
