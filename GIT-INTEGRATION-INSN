@@ -22,10 +22,6 @@ merge afl
 
   Experiment to allow using AFL to fuzz CGit.
 
-merge git-2.12
-
-  Preparation for updating to Git v2.12.0.
-
 merge no-hardcoded-oid-sizes
 
   Use #define'd constants for SHA1 sizes.
