@@ -2,7 +2,7 @@
 #define CGIT_H
 
 
-#include <git-compat-util.h>
+#include "cgit-compat-util.h"
 #include <stdbool.h>
 
 #include <cache.h>

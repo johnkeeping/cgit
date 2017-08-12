@@ -15,11 +15,17 @@ $(CGIT_PREFIX)VERSION: force-version
 -include $(CGIT_PREFIX)VERSION
 .PHONY: force-version
 
+ifneq ($(NO_TIMEGM),)
+	CGIT_COMPAT_CFLAGS += -DNO_TIMEGM
+	CGIT_COMPAT_OBJ_NAMES += compat/timegm.o
+endif
+
 # CGIT_CFLAGS is a separate variable so that we can track it separately
 # and avoid rebuilding all of Git when these variables change.
 CGIT_CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
 CGIT_CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CGIT_CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
+CGIT_CFLAGS += $(CGIT_COMPAT_CFLAGS)
 
 PKG_CONFIG ?= pkg-config
 
@@ -94,7 +100,7 @@ CGIT_OBJ_NAMES += ui-summary.o
 CGIT_OBJ_NAMES += ui-tag.o
 CGIT_OBJ_NAMES += ui-tree.o
 
-CGIT_OBJS := $(addprefix $(CGIT_PREFIX),$(CGIT_OBJ_NAMES))
+CGIT_OBJS := $(addprefix $(CGIT_PREFIX),$(CGIT_OBJ_NAMES) $(CGIT_COMPAT_OBJ_NAMES))
 
 # Only cgit.c reference CGIT_VERSION so we only rebuild its objects when the
 # version changes.
@@ -114,8 +120,11 @@ endif
 ifeq ($(wildcard $(CGIT_PREFIX).depend),)
 missing_dep_dirs += $(CGIT_PREFIX).depend
 endif
+ifeq ($(wildcard $(CGIT_PREFIX)compat/.depend),)
+missing_dep_dirs += $(CGIT_PREFIX)compat/.depend
+endif
 
-$(CGIT_PREFIX).depend:
+$(addprefix $(CGIT_PREFIX),.depend compat/.depend):
 	@mkdir -p $@
 
 $(CGIT_PREFIX)CGIT-CFLAGS: FORCE
