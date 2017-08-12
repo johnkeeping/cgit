@@ -1,13 +1,5 @@
 base origin/master
 
-merge fix-no-repo-segv
-
-  Fix a segfault with certain invalid combinations of URL parameters.
-
-merge atom-quote-url
-
-  Fix escaping an attribute value in the Atom feed.
-
 merge jk/email-angle-brackets
 
   Remove angle brackets from our internal representation of email addresses.
