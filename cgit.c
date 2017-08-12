@@ -1036,6 +1036,9 @@ int cmd_main(int argc, const char **argv)
 	const char *path;
 	int err, ttl;
 
+	if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+		fprintf(stderr, "cgit warning: failed to ignore SIGPIPE\n");
+
 	cgit_init_filters();
 	atexit(cgit_cleanup_filters);
 
