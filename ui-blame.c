@@ -74,14 +74,21 @@ static void emit_blame_entry_line_background(struct blame_scoreboard *sb,
 	size_t len, maxlen = 2;
 
 	for (line = ent->lno; line < ent->lno + ent->num_lines; line++) {
+		const char *start = blame_nth_line(sb, line);
+		const char *end = blame_nth_line(sb, line + 1);
+
 		html("\n");
-		len = blame_nth_line(sb, line + 1) - blame_nth_line(sb, line);
+		len = end - start;
+		while (start < end)
+			if (*(start++) == '\t')
+				len += 7;
+
 		if (len > maxlen)
 			maxlen = len;
 	}
 
 	for (len = 0; len < maxlen - 1; len++)
-		html(" ");
+		html("&nbsp;");
 }
 
 struct walk_tree_context {
