@@ -207,6 +207,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_snapshot_ttl = atoi(value);
 	else if (!strcmp(name, "case-sensitive-sort"))
 		ctx.cfg.case_sensitive_sort = atoi(value);
+	else if (!strcmp(name, "config-ref"))
+		ctx.cfg.config_ref = xstrdup(value);
 	else if (!strcmp(name, "about-filter"))
 		ctx.cfg.about_filter = cgit_new_filter(value, ABOUT);
 	else if (!strcmp(name, "commit-filter"))

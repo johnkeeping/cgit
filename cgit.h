@@ -189,6 +189,7 @@ struct cgit_config {
 	char *cache_root;
 	char *clone_prefix;
 	char *clone_url;
+	char *config_ref;
 	char *css;
 	char *favicon;
 	char *footer;

@@ -127,6 +127,14 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 		git_config_from_file(gitconfig_config, path->buf, NULL);
 		strbuf_setlen(path, pathlen);
 	}
+	if (ctx.cfg.config_ref) {
+		struct object_id oid;
+
+		if (!get_oid(ctx.cfg.config_ref, &oid))
+			git_config_from_blob_oid(gitconfig_config,
+						 ctx.cfg.config_ref, &oid,
+						 NULL);
+	}
 
 	if (ctx.cfg.remove_suffix) {
 		size_t urllen;
