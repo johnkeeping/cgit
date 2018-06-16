@@ -11,19 +11,49 @@
 #include "html.h"
 #include "ui-shared.h"
 
-void cgit_print_patch(const char *new_rev, const char *old_rev,
-		      const char *prefix)
+static void print_patch_page(const char *format, const char *rev_range,
+			     const char *prefix)
 {
+	const char *rev_argv[] = { NULL, "--reverse", format, rev_range, "--", prefix, NULL };
+	int rev_argc = ARRAY_SIZE(rev_argv) - 1;
 	struct rev_info rev;
 	struct commit *commit;
-	struct object_id new_rev_oid, old_rev_oid;
-	char rev_range[2 * GIT_SHA1_HEXSZ + 3];
-	const char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range, "--", prefix, NULL };
-	int rev_argc = ARRAY_SIZE(rev_argv) - 1;
 	char *patchname;
 
 	if (!prefix)
 		rev_argc--;
+
+	patchname = fmt("%s.patch", rev_range);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = patchname;
+	cgit_print_http_headers();
+
+	init_revisions(&rev, NULL);
+	rev.abbrev = DEFAULT_ABBREV;
+	rev.verbose_header = 1;
+	rev.diff = 1;
+	rev.show_root_diff = 1;
+	rev.max_parents = 1;
+	rev.diffopt.output_format |= DIFF_FORMAT_DIFFSTAT |
+			DIFF_FORMAT_PATCH | DIFF_FORMAT_SUMMARY;
+	if (prefix)
+		rev.diffopt.stat_sep = fmt("(limited to '%s')\n\n", prefix);
+	setup_revisions(rev_argc, rev_argv, &rev, NULL);
+	prepare_revision_walk(&rev);
+
+	while ((commit = get_revision(&rev)) != NULL) {
+		log_tree_commit(&rev, commit);
+		printf("-- \ncgit %s\n\n", cgit_version);
+	}
+}
+
+void cgit_print_patch(const char *new_rev, const char *old_rev,
+		      const char *prefix)
+{
+	const char *format = "--format=email";
+	struct commit *commit;
+	struct object_id new_rev_oid, old_rev_oid;
+	char rev_range[2 * GIT_SHA1_HEXSZ + 3];
 
 	if (!new_rev)
 		new_rev = ctx.qry.head;
@@ -64,32 +94,11 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 			oid_to_hex(&new_rev_oid));
 	}
 
-	patchname = fmt("%s.patch", rev_range);
-	ctx.page.mimetype = "text/plain";
-	ctx.page.filename = patchname;
-	cgit_print_http_headers();
-
 	if (ctx.cfg.noplainemail) {
-		rev_argv[2] = "--format=format:From %H Mon Sep 17 00:00:00 "
-			      "2001%nFrom: %an%nDate: %aD%n%w(78,0,1)Subject: "
-			      "%s%n%n%w(0)%b";
+		format = "--format=format:From %H Mon Sep 17 00:00:00 "
+			 "2001%nFrom: %an%nDate: %aD%n%w(78,0,1)Subject: "
+			 "%s%n%n%w(0)%b";
 	}
 
-	init_revisions(&rev, NULL);
-	rev.abbrev = DEFAULT_ABBREV;
-	rev.verbose_header = 1;
-	rev.diff = 1;
-	rev.show_root_diff = 1;
-	rev.max_parents = 1;
-	rev.diffopt.output_format |= DIFF_FORMAT_DIFFSTAT |
-			DIFF_FORMAT_PATCH | DIFF_FORMAT_SUMMARY;
-	if (prefix)
-		rev.diffopt.stat_sep = fmt("(limited to '%s')\n\n", prefix);
-	setup_revisions(rev_argc, rev_argv, &rev, NULL);
-	prepare_revision_walk(&rev);
-
-	while ((commit = get_revision(&rev)) != NULL) {
-		log_tree_commit(&rev, commit);
-		printf("-- \ncgit %s\n\n", cgit_version);
-	}
+	print_patch_page(format, rev_range, prefix);
 }
