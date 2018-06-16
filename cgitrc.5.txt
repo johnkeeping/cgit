@@ -650,7 +650,7 @@ specification with the relevant string; available values are:
 		completed. It must return an integer value. Usually 0
 		indicates success.
 
-	Additionally, cgit exposes to the Lua the following built-in functions:
+Additionally, cgit exposes to the Lua the following built-in functions:
 
 	'html(str)'::
 		Writes 'str' to the webpage.
@@ -721,9 +721,9 @@ auth filter::
 	standard input, and should write a complete CGI response, preferably
 	with a 302 redirect, and write to output one or more "Set-Cookie"
 	HTTP headers, each followed by a newline.
-
-	Please see `filters/simple-authentication.lua` for a clear example
-	script that may be modified.
++
+Please see `filters/simple-authentication.lua` for a clear example
+script that may be modified.
 
 
 All filters are handed the following environment variables:
