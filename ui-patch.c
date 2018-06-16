@@ -51,9 +51,9 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 		      const char *prefix)
 {
 	const char *format = "--format=email";
+	struct strbuf rev_range = STRBUF_INIT;
 	struct commit *commit;
 	struct object_id new_rev_oid, old_rev_oid;
-	char rev_range[2 * GIT_SHA1_HEXSZ + 3];
 
 	if (!new_rev)
 		new_rev = ctx.qry.head;
@@ -87,12 +87,11 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 		oidclr(&old_rev_oid);
 	}
 
-	if (is_null_oid(&old_rev_oid)) {
-		memcpy(rev_range, oid_to_hex(&new_rev_oid), GIT_SHA1_HEXSZ + 1);
-	} else {
-		sprintf(rev_range, "%s..%s", oid_to_hex(&old_rev_oid),
-			oid_to_hex(&new_rev_oid));
-	}
+	if (is_null_oid(&old_rev_oid))
+		strbuf_addstr(&rev_range, oid_to_hex(&new_rev_oid));
+	else
+		strbuf_addf(&rev_range, "%s..%s", oid_to_hex(&old_rev_oid),
+			    oid_to_hex(&new_rev_oid));
 
 	if (ctx.cfg.noplainemail) {
 		format = "--format=format:From %H Mon Sep 17 00:00:00 "
@@ -100,5 +99,6 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 			 "%s%n%n%w(0)%b";
 	}
 
-	print_patch_page(format, rev_range, prefix);
+	print_patch_page(format, rev_range.buf, prefix);
+	strbuf_release(&rev_range);
 }
