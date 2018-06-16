@@ -489,8 +489,7 @@ static char *expand_macro(char *name, int maxlength)
 
 /* Replace all tokens prefixed by '$' in the specified text with the
  * value of the named environment variable.
- * NB: the return value is a static buffer, i.e. it must be strdup'd
- * by the caller.
+ * NB: the return value is allocated, it must be freed by the caller.
  */
 char *expand_macros(const char *txt)
 {
@@ -530,7 +529,7 @@ char *expand_macros(const char *txt)
 		p = expand_macro(start, len);
 		*p = '\0';
 	}
-	return result;
+	return xstrdup(result);
 }
 
 char *get_mimetype_for_filename(const char *filename)

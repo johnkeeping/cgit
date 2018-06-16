@@ -190,7 +190,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "cache-size"))
 		ctx.cfg.cache_size = atoi(value);
 	else if (!strcmp(name, "cache-root"))
-		ctx.cfg.cache_root = xstrdup(expand_macros(value));
+		ctx.cfg.cache_root = expand_macros(value);
 	else if (!strcmp(name, "cache-root-ttl"))
 		ctx.cfg.cache_root_ttl = atoi(value);
 	else if (!strcmp(name, "cache-repo-ttl"))
@@ -232,16 +232,20 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "project-list"))
-		ctx.cfg.project_list = xstrdup(expand_macros(value));
-	else if (!strcmp(name, "scan-path"))
+		ctx.cfg.project_list = expand_macros(value);
+	else if (!strcmp(name, "scan-path")) {
+		char *expanded = expand_macros(value);
+
 		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
-			process_cached_repolist(expand_macros(value));
+			process_cached_repolist(expanded);
 		else if (ctx.cfg.project_list)
-			scan_projects(expand_macros(value),
+			scan_projects(expanded,
 				      ctx.cfg.project_list, repo_config);
 		else
-			scan_tree(expand_macros(value), repo_config);
-	else if (!strcmp(name, "scan-hidden-path"))
+			scan_tree(expanded, repo_config);
+
+		free(expanded);
+	} else if (!strcmp(name, "scan-hidden-path"))
 		ctx.cfg.scan_hidden_path = atoi(value);
 	else if (!strcmp(name, "section-from-path"))
 		ctx.cfg.section_from_path = atoi(value);
@@ -287,8 +291,12 @@ static void config_cb(const char *name, const char *value)
 			ctx.cfg.branch_sort = 0;
 	} else if (skip_prefix(name, "mimetype.", &arg))
 		add_mimetype(arg, value);
-	else if (!strcmp(name, "include"))
-		parse_configfile(expand_macros(value), config_cb);
+	else if (!strcmp(name, "include")) {
+		char *expanded = expand_macros(value);
+
+		parse_configfile(expanded, config_cb);
+		free(expanded);
+	}
 }
 
 static void querystring_cb(const char *name, const char *value)
@@ -1041,6 +1049,7 @@ static int calc_ttl(void)
 int cmd_main(int argc, const char **argv)
 {
 	const char *path;
+	char *expanded;
 	int err, ttl;
 
 	cgit_init_filters();
@@ -1052,7 +1061,11 @@ int cmd_main(int argc, const char **argv)
 	cgit_repolist.repos = NULL;
 
 	cgit_parse_args(argc, argv);
-	parse_configfile(expand_macros(ctx.env.cgit_config), config_cb);
+
+	expanded = expand_macros(ctx.env.cgit_config);
+	parse_configfile(expanded, config_cb);
+	free(expanded);
+
 	ctx.repo = NULL;
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
 
