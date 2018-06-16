@@ -640,29 +640,29 @@ specification with the relevant string; available values are:
 	during cgit's lifetime, making it a good choice for repeated filters
 	such as the 'email filter'. It responds to three functions:
 
-	'filter_open(argument1, argument2, argument3, ...)'::
+	'filter_open(argument1, argument2, argument3, ...)';;
 		This is called upon activation of the filter for a particular
 		set of data.
-	'filter_write(buffer)'::
+	'filter_write(buffer)';;
 		This is called whenever cgit writes data to the webpage.
-	'filter_close()'::
+	'filter_close()';;
 		This is called when the current filtering operation is
 		completed. It must return an integer value. Usually 0
 		indicates success.
 
-Additionally, cgit exposes to the Lua the following built-in functions:
+	Additionally, cgit exposes to the Lua the following built-in functions:
 
-	'html(str)'::
+	'html(str)';;
 		Writes 'str' to the webpage.
-	'html_txt(str)'::
+	'html_txt(str)';;
 		HTML escapes and writes 'str' to the webpage.
-	'html_attr(str)'::
+	'html_attr(str)';;
 		HTML escapes for an attribute and writes "str' to the webpage.
-	'html_url_path(str)'::
+	'html_url_path(str)';;
 		URL escapes for a path and writes 'str' to the webpage.
-	'html_url_arg(str)'::
+	'html_url_arg(str)';;
 		URL escapes for an argument and writes 'str' to the webpage.
-	'html_include(file)'::
+	'html_include(file)';;
 		Includes 'file' in webpage.
 
 
@@ -712,14 +712,14 @@ auth filter::
 	  - cgit page
 	  - cgit url
 	  - cgit login url
-	When the filter action is "body", this filter must write to output the
+	When the filter action is `body`, this filter must write to output the
 	HTML for displaying the login form, which POSTs to the login url. When
-	the filter action is "authenticate-cookie", this filter must validate
+	the filter action is `authenticate-cookie`, this filter must validate
 	the http cookie and return a 0 if it is invalid or 1 if it is invalid,
 	in the exit code / close function. If the filter action is
-	"authenticate-post", this filter receives POST'd parameters on
+	`authenticate-post`, this filter receives POST'd parameters on
 	standard input, and should write a complete CGI response, preferably
-	with a 302 redirect, and write to output one or more "Set-Cookie"
+	with a 302 redirect, and write to output one or more `Set-Cookie`
 	HTTP headers, each followed by a newline.
 +
 Please see `filters/simple-authentication.lua` for a clear example
@@ -728,13 +728,13 @@ script that may be modified.
 
 All filters are handed the following environment variables:
 
-- CGIT_REPO_URL (from repo.url)
-- CGIT_REPO_NAME (from repo.name)
-- CGIT_REPO_PATH (from repo.path)
-- CGIT_REPO_OWNER (from repo.owner)
-- CGIT_REPO_DEFBRANCH (from repo.defbranch)
-- CGIT_REPO_SECTION (from repo.section)
-- CGIT_REPO_CLONE_URL (from repo.clone-url)
+- `CGIT_REPO_URL` (from repo.url)
+- `CGIT_REPO_NAME` (from repo.name)
+- `CGIT_REPO_PATH` (from repo.path)
+- `CGIT_REPO_OWNER` (from repo.owner)
+- `CGIT_REPO_DEFBRANCH` (from repo.defbranch)
+- `CGIT_REPO_SECTION` (from repo.section)
+- `CGIT_REPO_CLONE_URL` (from repo.clone-url)
 
 If a setting is not defined for a repository and the corresponding global
 setting is also not defined (if applicable), then the corresponding
@@ -752,11 +752,11 @@ named environment variable:
 - project-list
 - scan-path
 
-Macro expansion will also happen on the content of $CGIT_CONFIG, if
+Macro expansion will also happen on the content of `$CGIT_CONFIG`, if
 defined.
 
 One usage of this feature is virtual hosting, which in its simplest form
-can be accomplished by adding the following line to /etc/cgitrc:
+can be accomplished by adding the following line to `/etc/cgitrc`:
 
 	include=/etc/cgitrc.d/$HTTP_HOST
 
