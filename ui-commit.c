@@ -140,7 +140,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 			tmp = oid_to_hex(&commit->parents->item->object.oid);
 		else
 			tmp = NULL;
-		cgit_print_diff(ctx.qry.sha1, tmp, prefix, 0, 0);
+		cgit_print_diff(ctx.qry.id, tmp, prefix, 0, 0);
 	}
 	strbuf_release(&notes);
 	cgit_free_commitinfo(info);

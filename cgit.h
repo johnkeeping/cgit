@@ -158,7 +158,7 @@ struct reflist {
 
 struct cgit_query {
 	int has_symref;
-	int has_sha1;
+	int has_id;
 	int has_difftype;
 	char *raw;
 	char *repo;
@@ -166,8 +166,8 @@ struct cgit_query {
 	char *search;
 	char *grep;
 	char *head;
-	char *sha1;
-	char *sha2;
+	char *id;
+	char *id2;
 	char *path;
 	char *name;
 	char *url;

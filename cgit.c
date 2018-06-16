@@ -314,11 +314,11 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.head = xstrdup(value);
 		ctx.qry.has_symref = 1;
 	} else if (!strcmp(name, "id")) {
-		ctx.qry.sha1 = xstrdup(value);
-		ctx.qry.has_sha1 = 1;
+		ctx.qry.id = xstrdup(value);
+		ctx.qry.has_id = 1;
 	} else if (!strcmp(name, "id2")) {
-		ctx.qry.sha2 = xstrdup(value);
-		ctx.qry.has_sha1 = 1;
+		ctx.qry.id2 = xstrdup(value);
+		ctx.qry.has_id = 1;
 	} else if (!strcmp(name, "ofs")) {
 		ctx.qry.ofs = atoi(value);
 	} else if (!strcmp(name, "path")) {
@@ -984,9 +984,11 @@ static void cgit_parse_args(int argc, const char **argv)
 		} else if (skip_prefix(argv[i], "--head=", &arg)) {
 			ctx.qry.head = xstrdup(arg);
 			ctx.qry.has_symref = 1;
-		} else if (skip_prefix(argv[i], "--sha1=", &arg)) {
-			ctx.qry.sha1 = xstrdup(arg);
-			ctx.qry.has_sha1 = 1;
+		} else if (skip_prefix(argv[i], "--id=", &arg) ||
+			   skip_prefix(argv[i], "--sha1=", &arg)) {
+			/* --sha1 is the old name, kept for compatibility */
+			ctx.qry.id = xstrdup(arg);
+			ctx.qry.has_id = 1;
 		} else if (skip_prefix(argv[i], "--ofs=", &arg)) {
 			ctx.qry.ofs = atoi(arg);
 		} else if (skip_prefix(argv[i], "--scan-tree=", &arg) ||
@@ -1029,7 +1031,7 @@ static int calc_ttl(void)
 	if (!strcmp(ctx.qry.page, "snapshot"))
 		return ctx.cfg.cache_snapshot_ttl;
 
-	if (ctx.qry.has_sha1)
+	if (ctx.qry.has_id)
 		return ctx.cfg.cache_static_ttl;
 
 	if (ctx.qry.has_symref)

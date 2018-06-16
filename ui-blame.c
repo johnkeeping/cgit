@@ -252,7 +252,7 @@ static int basedir_len(const char *path)
 
 void cgit_print_blame(void)
 {
-	const char *rev = ctx.qry.sha1;
+	const char *rev = ctx.qry.id;
 	struct object_id oid;
 	struct commit *commit;
 	struct pathspec_item path_items = {
