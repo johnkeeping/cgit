@@ -467,25 +467,19 @@ static int is_token_char(char c)
 	return isalnum(c) || c == '_';
 }
 
-/* Replace name with getenv(name), return pointer to zero-terminating char
+/* Replace name with getenv(name).
  */
-static char *expand_macro(char *name, int maxlength)
+static void expand_macro(struct strbuf *buf, ssize_t start)
 {
-	char *value;
-	int len;
+	const char *name = buf->buf + start;
+	const char *value = getenv(name);
 
-	len = 0;
-	value = getenv(name);
-	if (value) {
-		len = strlen(value);
-		if (len > maxlength)
-			len = maxlength;
-		strncpy(name, value, len);
-	}
-	return name + len;
+	/* Truncate output to remove variable name. */
+	strbuf_setlen(buf, start);
+
+	if (value)
+		strbuf_addstr(buf, value);
 }
-
-#define EXPBUFSIZE (1024 * 8)
 
 /* Replace all tokens prefixed by '$' in the specified text with the
  * value of the named environment variable.
@@ -493,43 +487,30 @@ static char *expand_macro(char *name, int maxlength)
  */
 char *expand_macros(const char *txt)
 {
-	static char result[EXPBUFSIZE];
-	char *p, *start;
-	int len;
+	struct strbuf result = STRBUF_INIT;
+	ssize_t start = -1;
 
-	p = result;
-	start = NULL;
-	while (p < result + EXPBUFSIZE - 1 && txt && *txt) {
-		*p = *txt;
-		if (start) {
+	while (txt && *txt) {
+		if (start >= 0) {
 			if (!is_token_char(*txt)) {
-				if (p - start > 0) {
-					*p = '\0';
-					len = result + EXPBUFSIZE - start - 1;
-					p = expand_macro(start, len) - 1;
-				}
-				start = NULL;
-				txt--;
+				if (result.len - start >= 0)
+					expand_macro(&result, start);
+				start = -1;
 			}
-			p++;
-			txt++;
-			continue;
 		}
-		if (*txt == '$') {
-			start = p;
-			txt++;
-			continue;
-		}
-		p++;
+
+		if (*txt == '$')
+			start = result.len;
+		else
+			strbuf_addch(&result, *txt);
+
 		txt++;
 	}
-	*p = '\0';
-	if (start && p - start > 0) {
-		len = result + EXPBUFSIZE - start - 1;
-		p = expand_macro(start, len);
-		*p = '\0';
-	}
-	return xstrdup(result);
+
+	if (start >= 0 && result.len - start > 0)
+		expand_macro(&result, start);
+
+	return strbuf_detach(&result, NULL);
 }
 
 char *get_mimetype_for_filename(const char *filename)
