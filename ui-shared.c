@@ -1006,6 +1006,10 @@ void cgit_print_pageheader(void)
 		if (ctx.qry.page && !strcmp(ctx.qry.page, "blame"))
 			cgit_blame_link("blame", NULL, hc("blame"), ctx.qry.head,
 				        ctx.qry.sha1, ctx.qry.vpath);
+		else if (ctx.qry.page && !strcmp(ctx.qry.page, "source"))
+			cgit_source_link("tree", NULL, hc("source"),
+					 ctx.qry.head, ctx.qry.sha1,
+					 ctx.qry.vpath);
 		else
 			cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
 				       ctx.qry.sha1, ctx.qry.vpath);
